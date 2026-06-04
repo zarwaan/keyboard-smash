@@ -9,7 +9,7 @@ export const keyLengthConfig = {
     reg: '',
     tab: tab+'%',
     backspace: bksp+'%',
-    caps: caps+'%',
+    "caps lock": caps+'%',
     return: ret+'%',
     shift: shift+'%',
     space: "35%",
@@ -17,7 +17,7 @@ export const keyLengthConfig = {
 }
 
 export const QwertyRows = [
-    ['Esc', 'F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'F10', 'F11', 'F12', 'Blank'],
+    ['esc', 'F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'F10', 'F11', 'F12', 'Blank'],
 
     ['`', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', 'backspace'],
 
