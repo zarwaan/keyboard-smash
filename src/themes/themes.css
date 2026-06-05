@@ -1,0 +1,26 @@
+:root {
+    --color-white: rgba(255,255,255,0.7)
+}
+
+:root[data-theme="light"] {
+    /* General page colors */
+    --bg-color : var(--color-indigo-50);
+    --text-color: var(--color-black);
+
+    /* Keyboard colors */
+    --keyboard-bg: var(--color-gray-300);
+    --key-color: var(--color-gray-50);
+    --key-text-color: var(--color-black);
+}
+
+:root[data-theme="dark"]{
+    /* General page colors */
+    --bg-color : rgb(2, 0, 21);
+    --text-color: var(--color-white);
+
+    /* Keyboard colors */
+    --keyboard-border-color: var(--color-white);
+    --keyboard-bg: var(--color-zinc-950);
+    --key-color: var(--color-zinc-700);
+    --key-text-color: var(--color-white);
+}

@@ -5,6 +5,6 @@ export default function ThemeToggle() {
 
     useEffect(() => {document.documentElement.setAttribute('data-theme', theme); console.log(document.documentElement.getAttribute('data-theme'))},[theme]);
     return (
-        <button className="border p-3" onClick={()=>setTheme(theme === "light" ? "dark" : "light")}>Change</button>
+        <button className="text-(--text-color) border p-3" onClick={()=>setTheme(theme === "light" ? "dark" : "light")}>Change</button>
     )
 }
