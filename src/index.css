@@ -9,3 +9,8 @@
 .small-gap {
 	gap: 3px 3px
 }
+
+.border-0\.5{
+	border-style: var(--tw-border-style);
+    border-width: 0.5px;
+}
