@@ -16,7 +16,8 @@ export default function Toggle({toggleOnState, toggleOffState} : {
         ${ toggleOn ? "bg-indigo-500" : "bg-gray-400"}` }
             onClick={handleClick}>
             <div className={`absolute h-[84%] top-[8%] left-[6%] aspect-square rounded-full bg-(--full-white)
-                transition-transform duration-200 ${ toggleOn ? 'translate-x-[106%]' : '' }`}></div>
+                transition-transform duration-300 ${ toggleOn ? 'translate-x-[106%]' : 'translate-x-0' }`}
+            />
         </div>
     )
 }

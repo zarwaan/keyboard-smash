@@ -1,5 +1,13 @@
 @import "tailwindcss";
 
+@utility theme-transition {
+  @apply transition-colors duration-3000
+}
+
+:root {
+	--theme-transition-duration: 3000ms
+}
+
 .flex-center {
 	display: flex;
 	justify-content: center;
@@ -14,3 +22,4 @@
 	border-style: var(--tw-border-style);
     border-width: 0.5px;
 }
+
