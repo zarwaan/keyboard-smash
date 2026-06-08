@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react"
 
-export default function Toggle({toggleOnState, toggleOffState} : {
+export default function Toggle({toggleOnState, toggleOffState, isAlreadyOn=false} : {
     toggleOnState: () => void,
     toggleOffState: () => void,
+    isAlreadyOn?: boolean
 }) {
-    const [toggleOn, setToggleOn] = useState(false);
+    const [toggleOn, setToggleOn] = useState(isAlreadyOn);
     const handleClick = () => {
         setToggleOn(prev => !prev);
     }

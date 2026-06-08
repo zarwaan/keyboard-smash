@@ -6,7 +6,7 @@ export default function Key({ keyOptions }: { keyOptions: keyType }) {
         <div className="border-[0.5px] border-black rounded-md flex-center bg-(--key-color) shadow-2xl text-(--key-text-color) theme-transition" style={widthStyle}>
             {
                 keyOptions.label === "space" ? "" :
-                keyOptions.label === "Blank" ? "?" :
+                keyOptions.label === "Blank" ? "⏻" :
                 keyOptions.label
             }
         </div>

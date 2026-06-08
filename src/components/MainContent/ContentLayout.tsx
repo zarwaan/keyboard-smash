@@ -6,7 +6,7 @@ export default function ContentLayout() {
     return (
         <div className="border-black border-2 h-[98vh] text-center flex-col justify-items-center m-2 p-2 relative 
         main-content">
-            <div className="w-full border">
+            <div className="w-full borde">
                 <SettingsIcon />
             </div>
             <KeyboardContainer />
