@@ -5,7 +5,7 @@ import BackgroundBlur from './components/Utils/BackgroundBlur'
 import AppProviders from './providers/AppProviders'
 import { useUIContext } from './providers/UIProvider'
 import { useEffect } from 'react'
-import { AnimatePresence, motion } from 'motion/react'
+import { AnimatePresence } from 'motion/react'
 
 function App() {
 	useEffect(() => {

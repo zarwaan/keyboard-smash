@@ -5,7 +5,14 @@
 }
 
 :root {
-	--theme-transition-duration: 3000ms
+	--theme-transition-duration: 3000ms;
+	--header-font: 'StonePunk', sans-serif;
+	/* --header-font: 'BombSound', sans-serif; */
+	/* --header-font: 'NanoPix', sans-serif; */
+
+	
+	/* --header-font: 'GML', sans-serif; */
+	/* --header-font: 'Undak', sans-serif; */
 }
 
 .flex-center {
@@ -21,5 +28,40 @@
 .border-0\.5{
 	border-style: var(--tw-border-style);
     border-width: 0.5px;
+}
+
+@font-face {
+	font-family: 'StonePunk';
+	src: url(./assets/fonts/StonePunk.ttf) format('truetype');
+	font-weight: normal;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'GML';
+	src: url(./assets/fonts/GML.ttf) format('truetype');
+	font-weight: normal;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'NanoPix';
+	src: url(./assets/fonts/NanoPix.ttf) format('truetype');
+	font-weight: normal;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'Undak';
+	src: url(./assets/fonts/undak.otf) format('opentype');
+	font-weight: normal;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'BombSound';
+	src: url(./assets/fonts/BombSound.otf) format('opentype');
+	font-weight: normal;
+	font-style: normal;
 }
 

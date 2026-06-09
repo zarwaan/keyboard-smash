@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from "react"
+import { createContext, useContext, useState } from "react"
 
 type theme = 'light' | 'dark';
 
@@ -38,10 +38,6 @@ export default function UIProvider({children} : {children: React.ReactNode}) {
         setCurrentTheme('dark');
         document.documentElement.setAttribute('data-theme', 'dark')
     }
-
-    // useEffect(() => {
-    //     document.documentElement.setAttribute('data-theme', currentTheme)
-    // },[]);
 
     return (
         <UIContext.Provider value={{
