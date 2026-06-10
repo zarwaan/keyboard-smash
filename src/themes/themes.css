@@ -3,6 +3,8 @@
     --full-white: #ffffff;
     --light-bg-color: var(--color-indigo-50);
     --dark-bg-color: rgb(2, 0, 21);
+
+     
 }
 
 :root[data-theme="light"] {
@@ -10,6 +12,7 @@
     --bg-color : var(--color-indigo-50);
     --text-color: var(--color-black);
 
+    /* Inverted */
     --bg-color-inverted: rgb(2, 0, 21);
     --text-color-inverted: var(--color-white);
 
@@ -17,6 +20,8 @@
     --keyboard-bg: var(--color-gray-300);
     --key-color: var(--color-gray-50);
     --key-text-color: var(--color-black);
+    --key-bg-color-disabled: --alpha(var(--color-gray-200) / 80%);
+    --key-text-color-disabled: --alpha(var(--color-gray-400) / 80%);
 }
 
 :root[data-theme="dark"]{
@@ -24,6 +29,7 @@
     --bg-color : rgb(2, 0, 21);
     --text-color: var(--color-white);
 
+    /* Inverted */
     --bg-color-inverted: var(--color-indigo-50);
     --text-color-inverted: var(--color-black);
 
@@ -32,4 +38,6 @@
     --keyboard-bg: var(--color-zinc-950);
     --key-color: var(--color-zinc-700);
     --key-text-color: var(--color-white);
+    --key-bg-color-disabled: --alpha(var(--color-zinc-800) / 80%);
+    --key-text-color-disabled: --alpha(var(--color-zinc-500) / 80%);
 }

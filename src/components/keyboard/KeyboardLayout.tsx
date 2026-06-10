@@ -4,7 +4,7 @@ import Key from "./Key";
 import ArrowKeys from "./ArrowKeys";
 
 export default function KeyboardLayout() {
-    const gapValue = "gap-1";
+    const gapValue = "gap-0";
     return (
         <div className={`w-75/100 border border-(--keyboard-border-color) grid grid-rows-6 aspect-3/1 ${gapValue} p-2 rounded-xl bg-(--keyboard-bg) theme-transition`}>
         {
@@ -14,12 +14,13 @@ export default function KeyboardLayout() {
                             keyRow.map((keyValue, columnIndex) => {
                                     let keyOptions: keyType = {
                                         label: keyValue,
+                                        disabled: rowIndex===0 || rowIndex===QwertyRows.length-1
                                     }
                                     if(Object.keys(keyLengthConfig).includes(keyValue)) 
                                         keyOptions.length = keyLengthConfig[keyValue as keyof typeof keyLengthConfig]
                                     return(  
                                         keyValue === "arrows" ?  
-                                        <ArrowKeys key={'arrowKeys'} />
+                                        <ArrowKeys key={'arrowKeys'} disabled/>
                                         :
                                         <Key keyOptions={keyOptions} key={`key-${rowIndex}-${columnIndex}`}/>
 
