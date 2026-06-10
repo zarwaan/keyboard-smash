@@ -6,13 +6,11 @@ import AppProviders from './providers/AppProviders'
 import { useUIContext } from './providers/UIProvider'
 import { useEffect } from 'react'
 import { AnimatePresence } from 'motion/react'
-import useKeyboard from './hooks/useKeyboard'
 
 function App() {
 	useEffect(() => {
 		document.body.classList.add('theme-transition');
 	});
-	useKeyboard();
 	return (
 		<AppProviders>
 			<AppContent />

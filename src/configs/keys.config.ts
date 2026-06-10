@@ -10,8 +10,9 @@ export const keyLengthConfig = {
     tab: tab+'%',
     backspace: bksp+'%',
     "caps lock": caps+'%',
-    return: ret+'%',
-    shift: shift+'%',
+    enter: ret+'%',
+    shiftleft: shift+'%',
+    shiftright: shift+'%',
     space: "35%",
     arrows: '18%'
 }
@@ -23,9 +24,9 @@ export const QwertyRows = [
 
     ['tab', 'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', '[', ']', '\\'],
 
-    ['caps lock', 'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', ';', "'", 'return'],
+    ['caps lock', 'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', ';', "'", 'enter'],
 
-    ['shift', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', ',', '.', '/', 'shift'],
+    ['shiftleft', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', ',', '.', '/', 'shiftright'],
 
     ['fn', 'control', 'option', 'command', 'space', 'command', 'option', 'arrows'],
 ]
