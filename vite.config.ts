@@ -16,4 +16,7 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src")
     }
   },
+  server : {
+    allowedHosts: ['heterogamous-amos-filterable.ngrok-free.dev']
+  }
 })
