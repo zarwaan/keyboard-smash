@@ -3,6 +3,7 @@ import SettingsIcon from "../Settings/SettingsIcon";
 import SettingsBox from "../Settings/SettingsBox";
 import Header from "./Header";
 import MainBody from "./MainBody";
+import GameControls from "../GameDisplay/ControlDisplay/GameControls";
 
 export default function ContentLayout() {
     return (
@@ -11,6 +12,7 @@ export default function ContentLayout() {
             <Header />
             <MainBody>
                 <KeyboardContainer />
+                <GameControls />
             </MainBody>
             <SettingsBox />
             <SettingsIcon />
