@@ -1,11 +1,17 @@
 import { QwertyRows } from "@/configs/keys.config";
 import { createContext, useContext, useEffect, useRef, useState } from "react"
 
+interface Target {
+    key: string,
+    expiresAt: number,
+    isBomb: boolean
+}
+
 interface GameState {
     pressedKeys : Set<string>;
     isPressed: (keyValue: string) => boolean;
-    targetKeys : Set<string>;
-    isTarget : (keyValeu: string) => boolean;
+    targetKeys : Target[];
+    isTarget : (keyValue: string) => boolean;
     gameState : 'ongoing' | 'stopped';
     isPaused : boolean ;
     startGame : () => void ;
@@ -17,7 +23,7 @@ interface GameState {
 const GameContext = createContext<GameState>({
     pressedKeys: new Set<string>(),
     isPressed: () => false,
-    targetKeys : new Set<string>,
+    targetKeys : [],
     isTarget : () => false,
     gameState : 'stopped',
     isPaused : false,
@@ -32,18 +38,19 @@ export default function GameProvider({children} : {children: React.ReactNode}) {
     const [pressedKeys, setPressedKeys] = useState(new Set<string>);
     const isPressed = (keyValue: string) => pressedKeys.has(keyValue.toLowerCase())
     
-    const [targetKeys, setTargetKeys] = useState(new Set<string>);
-    const isTarget = (keyValue: string) => targetKeys.has(keyValue.toLowerCase())
+    const [targetKeys, setTargetKeys] = useState<Target[]>([]);
+    const isTarget = (keyValue: string) => targetKeys.some(target => target.key.toLowerCase() === keyValue.toLowerCase());
     
     // move to game settings provider
     const interval = 300;
     const timeActive = 1000;
-    const includeSpecialKeys = true
+    // const includeSpecialKeys = true
 
     const intervalId = useRef<number>(null);
     const [gameState, setGameState] = useState<GameState['gameState']>('stopped');
     const [isPaused, setIsPaused] = useState(false);
     const isPausedRef = useRef(false);
+    const pausedTimeRef = useRef(0);
 
     const startGame = () => {
         setGameState('ongoing');
@@ -52,20 +59,24 @@ export default function GameProvider({children} : {children: React.ReactNode}) {
     const stopGame = () => {
         setGameState('stopped')
         isPausedRef.current = false;
-        setIsPaused(false)
+        setIsPaused(false);
+        setTargetKeys([]);
     }
 
     const pauseGame = () => {
         if(intervalId.current){
             isPausedRef.current = true;
-            setIsPaused(true)
+            setIsPaused(true);
+            pausedTimeRef.current = Date.now();
         }
     }
 
     const resumeGame = () => {
+        const pausedDuration = Date.now() - pausedTimeRef.current;
         if(intervalId.current){
             isPausedRef.current = false;
             setIsPaused(false);
+            setTargetKeys(prev => prev.map(target => ({...target, expiresAt : target.expiresAt + pausedDuration})))
         }
     }
     
@@ -115,43 +126,27 @@ export default function GameProvider({children} : {children: React.ReactNode}) {
         return Math.floor(Math.random() * max);
     }
 
-    function generateTargets(){
-        const activeRows = [
-            QwertyRows[1], QwertyRows[2], QwertyRows[3], QwertyRows[4], 
-        ]
-
+    const activeRows = [
+        QwertyRows[1], QwertyRows[2], QwertyRows[3], QwertyRows[4], 
+    ]
+        
+    function generateTarget(){
         let i = getRandomNumber(activeRows.length);
         let j = getRandomNumber(activeRows[i].length);
 
-        setTargetKeys(prev => {
-            const next = new Set(prev);
-            next.add(activeRows[i][j].toLowerCase());
-            return next;
-        })
-
-        // setTimeout(() => {
-        //     setTargetKeys(prev => {
-        //         const next = new Set(prev);
-        //         next.delete(activeRows[i][j].toLowerCase());
-        //         return next;
-        //     })
-        // }, timeActive)
-
-        //trying something
-        function removeWhenUnpaused(key: string) {
-            if (isPausedRef.current) {
-                setTimeout(() => removeWhenUnpaused(key), 100);
-                return;
-            }
-
-            setTargetKeys(prev => {
-                const next = new Set(prev);
-                next.delete(key);
-                return next;
-            });
+        if(!isTarget(activeRows[i][j].toLowerCase())){
+            setTargetKeys(prev => 
+                [
+                    ...prev,
+                    {
+                        key: activeRows[i][j].toLowerCase(),
+                        expiresAt: Date.now() + timeActive,
+                        isBomb: false
+                    }
+                ]
+            )
         }
-        
-        setTimeout(() => removeWhenUnpaused(activeRows[i][j].toLowerCase()),timeActive);
+        else generateTarget();
     }
 
     // useEffect(() => console.log(pressedKeys),[pressedKeys]);
@@ -161,17 +156,24 @@ export default function GameProvider({children} : {children: React.ReactNode}) {
         window.addEventListener('keydown',handleKeyDown);
         window.addEventListener('keyup',handleKeyUp);
 
+        const cleanupInterval = window.setInterval(() => {
+            if(isPausedRef.current) return;
+            setTargetKeys(prev => prev.filter(target => target.expiresAt > Date.now()))
+        },100)
+
         return () => {
             window.removeEventListener('keydown',handleKeyDown);
             window.removeEventListener('keyup',handleKeyUp);
+            window.clearInterval(cleanupInterval);
         }
     }, [])
 
     useEffect(() => {
         if(gameState === 'ongoing'){
             intervalId.current = window.setInterval(() => {
-                if(!isPausedRef.current)
-                    generateTargets()
+                if(!isPausedRef.current){
+                    generateTarget()
+                }
                     // console.log(i++);
             }, interval);
         }
