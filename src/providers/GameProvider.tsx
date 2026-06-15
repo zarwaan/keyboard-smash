@@ -11,7 +11,8 @@ interface GameState {
     pressedKeys : Set<string>;
     isPressed: (keyValue: string) => boolean;
     targetKeys : Target[];
-    isTarget : (keyValue: string) => boolean;
+    isHitTarget : (keyValue: string) => boolean;
+    isBomb : (keyValue: string) => boolean;
     gameState : 'ongoing' | 'stopped';
     isPaused : boolean ;
     startGame : () => void ;
@@ -24,7 +25,8 @@ const GameContext = createContext<GameState>({
     pressedKeys: new Set<string>(),
     isPressed: () => false,
     targetKeys : [],
-    isTarget : () => false,
+    isHitTarget : () => false,
+    isBomb : () => false,
     gameState : 'stopped',
     isPaused : false,
     startGame : () => {},
@@ -39,11 +41,13 @@ export default function GameProvider({children} : {children: React.ReactNode}) {
     const isPressed = (keyValue: string) => pressedKeys.has(keyValue.toLowerCase())
     
     const [targetKeys, setTargetKeys] = useState<Target[]>([]);
-    const isTarget = (keyValue: string) => targetKeys.some(target => target.key.toLowerCase() === keyValue.toLowerCase());
+    const isHitTarget = (keyValue: string) => targetKeys.some(target => target.key.toLowerCase() === keyValue.toLowerCase() && !target.isBomb);
+    const isBomb = (keyValue: string) => targetKeys.some(target => target.key.toLowerCase() === keyValue.toLowerCase() && target.isBomb);
     
     // move to game settings provider
     const interval = 300;
     const timeActive = 1000;
+    const bombProbability = 0.2;
     // const includeSpecialKeys = true
 
     const intervalId = useRef<number>(null);
@@ -134,14 +138,14 @@ export default function GameProvider({children} : {children: React.ReactNode}) {
         let i = getRandomNumber(activeRows.length);
         let j = getRandomNumber(activeRows[i].length);
 
-        if(!isTarget(activeRows[i][j].toLowerCase())){
+        if(!targetKeys.some(target => target.key.toLowerCase() === activeRows[i][j].toLowerCase())){
             setTargetKeys(prev => 
                 [
                     ...prev,
                     {
                         key: activeRows[i][j].toLowerCase(),
                         expiresAt: Date.now() + timeActive,
-                        isBomb: false
+                        isBomb: Math.random() < bombProbability
                     }
                 ]
             )
@@ -189,7 +193,7 @@ export default function GameProvider({children} : {children: React.ReactNode}) {
 
     return (
         <GameContext.Provider value={{
-            pressedKeys, isPressed, targetKeys, isTarget, 
+            pressedKeys, isPressed, targetKeys, isHitTarget, isBomb,
             gameState,isPaused,startGame,stopGame,pauseGame,resumeGame,
         }}>
             {children}
