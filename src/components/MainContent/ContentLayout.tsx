@@ -4,6 +4,7 @@ import SettingsBox from "../Settings/SettingsBox";
 import Header from "./Header";
 import MainBody from "./MainBody";
 import GameControls from "../GameDisplay/ControlDisplay/GameControls";
+import Score from "../GameDisplay/ScoreDisplay/Score";
 
 export default function ContentLayout() {
     return (
@@ -13,6 +14,7 @@ export default function ContentLayout() {
             <MainBody>
                 <KeyboardContainer />
                 <GameControls />
+                <Score />
             </MainBody>
             <SettingsBox />
             <SettingsIcon />

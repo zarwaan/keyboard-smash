@@ -7,6 +7,11 @@ interface Target {
     isBomb: boolean
 }
 
+interface Score {
+    targetHits: number;
+    bombHits: number;
+}
+
 interface GameState {
     pressedKeys : Set<string>;
     isPressed: (keyValue: string) => boolean;
@@ -19,6 +24,7 @@ interface GameState {
     stopGame : () => void ;
     pauseGame : () => void ;
     resumeGame : () => void ;
+    score : Score;
 }
 
 const GameContext = createContext<GameState>({
@@ -33,6 +39,7 @@ const GameContext = createContext<GameState>({
     stopGame : () => {},
     pauseGame : () => {},
     resumeGame : () => {},
+    score : {targetHits: 0, bombHits: 0},
 })
 
 export default function GameProvider({children} : {children: React.ReactNode}) {
@@ -43,10 +50,11 @@ export default function GameProvider({children} : {children: React.ReactNode}) {
     const [targetKeys, setTargetKeys] = useState<Target[]>([]);
     const isHitTarget = (keyValue: string) => targetKeys.some(target => target.key.toLowerCase() === keyValue.toLowerCase() && !target.isBomb);
     const isBomb = (keyValue: string) => targetKeys.some(target => target.key.toLowerCase() === keyValue.toLowerCase() && target.isBomb);
+    const [score, setScore] = useState<Score>({targetHits:0, bombHits: 0});
     
     // move to game settings provider
-    const interval = 300;
-    const timeActive = 1000;
+    const interval = 3000;
+    const timeActive = 3000;
     const bombProbability = 0.2;
     // const includeSpecialKeys = true
 
@@ -98,6 +106,7 @@ export default function GameProvider({children} : {children: React.ReactNode}) {
         if(getNameOfKey(e)==='tab') e.preventDefault();
         if(e.repeat) return
         let key = getNameOfKey(e);
+
         if(key)
             setPressedKeys(prev => {
                 const next = new Set(prev);
@@ -113,6 +122,7 @@ export default function GameProvider({children} : {children: React.ReactNode}) {
                     return next;
                 });
             }, 150);
+
     }
 
     function handleKeyUp(e: KeyboardEvent) {
@@ -157,6 +167,23 @@ export default function GameProvider({children} : {children: React.ReactNode}) {
     // useEffect(() => console.log(targetKeys),[targetKeys]);
 
     useEffect(() => {
+        let hit = targetKeys.find(target => pressedKeys.has(target.key.toLowerCase())); 
+        if(hit){
+            if(!hit.isBomb)
+                setScore(prev => ({
+                    ...prev,
+                    targetHits: prev.targetHits+1
+                }))
+            else
+                setScore(prev => ({
+                    ...prev,
+                    bombHits: prev.bombHits+1
+                }))
+            setTargetKeys(prev => prev.filter(target => target.key !== hit.key))
+        }
+    },[pressedKeys])
+
+    useEffect(() => {
         window.addEventListener('keydown',handleKeyDown);
         window.addEventListener('keyup',handleKeyUp);
 
@@ -194,7 +221,7 @@ export default function GameProvider({children} : {children: React.ReactNode}) {
     return (
         <GameContext.Provider value={{
             pressedKeys, isPressed, targetKeys, isHitTarget, isBomb,
-            gameState,isPaused,startGame,stopGame,pauseGame,resumeGame,
+            gameState,isPaused,startGame,stopGame,pauseGame,resumeGame, score
         }}>
             {children}
         </GameContext.Provider>
