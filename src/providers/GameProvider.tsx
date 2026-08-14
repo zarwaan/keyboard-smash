@@ -46,7 +46,7 @@ const GameContext = createContext<GameState>({
 
 export default function GameProvider({children} : {children: React.ReactNode}) {
     
-    const {includeSpecialKeys, targetInterval, timeActive, bombProbability} = useGameSettingsContext();
+    const { targetInterval, timeActive, bombProbability} = useGameSettingsContext();
 
     const [pressedKeys, setPressedKeys] = useState(new Set<string>);
     const isPressed = (keyValue: string) => pressedKeys.has(keyValue.toLowerCase())

@@ -4,11 +4,28 @@ import SectionBody from "./Section/SectionBody";
 import SectionOption from "./Section/SectionOption";
 import ThemeToggle from "./ThemeToggle/ThemeToggle";
 import { useUIContext } from "@/providers/UIProvider";
-import PlayToggle from "./ThemeToggle/PlayToggle";
 import { AnimatePresence, motion } from "motion/react";
+import GameModeDropdown from "./Dropdowns/GameModeDropdown";
+import DifficultyDropdown from "./Dropdowns/DifficultyDropdown";
+import { useEffect } from "react";
 
 export default function SettingsBox() {
     const {isSettingsOpen, closeSettings} = useUIContext();
+    useEffect(() => {
+        if (!isSettingsOpen) return;
+
+        function handleKeyDown(e: KeyboardEvent) {
+            if (e.key === "Escape") {
+                closeSettings();
+            }
+        }
+
+        window.addEventListener("keydown", handleKeyDown);
+
+        return () => {
+            window.removeEventListener("keydown", handleKeyDown);
+        };
+    }, [isSettingsOpen, closeSettings]);
     return (
         <AnimatePresence>
         {    
@@ -33,38 +50,18 @@ export default function SettingsBox() {
                                 <span>Dark mode</span>
                                 <ThemeToggle />
                             </SectionOption>
-                            <SectionOption>
-                                <span>Setting 2</span>
-                                <PlayToggle />
-                            </SectionOption>
-                            <SectionOption>
-                                <span>Setting 3</span>
-                                <PlayToggle />
-                            </SectionOption>
-                            <SectionOption>
-                                <span>Setting 4</span>
-                                <PlayToggle />
-                            </SectionOption>
                         </SectionBody>
                     </SectionBox>
                     <SectionBox>
                         <SectionHeader title="Game mechanics" />
                         <SectionBody>
                             <SectionOption>
-                                <span>Dark mode</span>
-                                <PlayToggle />
+                                <span>Play mode</span>
+                                <GameModeDropdown z={1}/>
                             </SectionOption>
                             <SectionOption>
-                                <span>Setting 2</span>
-                                <PlayToggle />
-                            </SectionOption>
-                            <SectionOption>
-                                <span>Setting 3</span>
-                                <PlayToggle />
-                            </SectionOption>
-                            <SectionOption>
-                                <span>Setting 4</span>
-                                <PlayToggle />
+                                <span>Difficulty Level</span>
+                                <DifficultyDropdown z={2} />
                             </SectionOption>
                         </SectionBody>
                     </SectionBox>
