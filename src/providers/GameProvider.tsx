@@ -1,6 +1,7 @@
 import { QwertyRows } from "@/configs/keys.config";
 import { createContext, useContext, useEffect, useRef, useState } from "react"
 import { useGameSettingsContext } from "./GameSettingsProvider";
+import { difficulties } from "@/configs/difficulties.config";
 
 interface Target {
     key: string,
@@ -45,8 +46,9 @@ const GameContext = createContext<GameState>({
 })
 
 export default function GameProvider({children} : {children: React.ReactNode}) {
-    
-    const { targetInterval, timeActive, bombProbability} = useGameSettingsContext();
+
+    const { difficulty } = useGameSettingsContext();
+    const { targetInterval, timeActive, bombProbability} = difficulties[difficulty];
 
     const [pressedKeys, setPressedKeys] = useState(new Set<string>);
     const isPressed = (keyValue: string) => pressedKeys.has(keyValue.toLowerCase())
