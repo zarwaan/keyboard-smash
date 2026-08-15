@@ -5,7 +5,7 @@ export default function DifficultyDropdown({z} : {z:number}) {
     const {difficulty, setDifficulty} = useGameSettingsContext();
     const zindex = z+10;
     return (
-        <div className={`w-25/100 borde border-green-300 ${"z-"+zindex}`}>
+        <div className={`w-25/100 borde border-green-300 ${"z-"+zindex} z-20`}>
             <Dropdown<GameSettings['difficulty']>
                 optionList={[
                     {label: "Easy", value:"easy"},

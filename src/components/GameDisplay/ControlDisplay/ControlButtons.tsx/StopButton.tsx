@@ -5,7 +5,7 @@ export default function StopButton({}) {
     const {stopGame} = useGameContext()
     return (
         <ControlButtonTemplate
-            label="Quit"
+            label="Reset"
             onClickAction={() => {console.log("Game stopped"); stopGame()}}
         />
     )

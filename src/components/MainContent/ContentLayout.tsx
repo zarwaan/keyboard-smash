@@ -9,7 +9,7 @@ import Score from "../GameDisplay/ScoreDisplay/Score";
 export default function ContentLayout() {
     return (
         <div className="border-(--text-color) border- h-[98vh] text-center flex flex-col justify-items-center p-4 relative 
-        main-content gap-20">
+        main-content gap-10">
             <Header />
             <MainBody>
                 <KeyboardContainer />

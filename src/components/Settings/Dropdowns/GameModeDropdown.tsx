@@ -5,7 +5,7 @@ export default function GameModeDropdown({z} : {z:number}) {
     const {playMode, setPlayMode} = useGameSettingsContext();
     const zindex = z+10;
     return (
-        <div className={`w-25/100 borde border-green-300 ${"z-"+zindex}`}>
+        <div className={`w-25/100 borde border-green-300 ${"z-"+zindex} z-25`}>
             <Dropdown<GameSettings['playMode']>
                 optionList={[
                     {label: "Lives-based", value:"lives"},

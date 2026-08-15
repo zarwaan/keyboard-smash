@@ -57,11 +57,11 @@ export default function SettingsBox() {
                         <SectionBody>
                             <SectionOption>
                                 <span>Play mode</span>
-                                <GameModeDropdown z={1}/>
+                                <GameModeDropdown z={-1}/>
                             </SectionOption>
                             <SectionOption>
                                 <span>Difficulty Level</span>
-                                <DifficultyDropdown z={2} />
+                                <DifficultyDropdown z={-2} />
                             </SectionOption>
                         </SectionBody>
                     </SectionBox>
