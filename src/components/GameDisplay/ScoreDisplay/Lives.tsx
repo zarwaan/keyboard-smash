@@ -1,20 +1,27 @@
 import heartPng from "@/assets/images/lives.png"
 import { AnimatePresence, motion } from "motion/react";
 import { useGameContext } from "@/providers/GameProvider";
+import GameOverBox from "./GameOverBox";
 
 export default function Lives({}) {
-    const {score, gameId} = useGameContext();
+    const {score, gameId, isgameOver} = useGameContext();
     return (
         <div className="w-full p-1 flex flex-row gap-4 flex-center">
-            <span>Lives: </span>
             <span className="flex flex-row gap-2">
-                <AnimatePresence>
-                    {
-                        Array.from({length: score.lives}).map((_, i) => 
-                            <Life key={`life-${gameId}-${i}`} />
-                        )
-                    }
-                </AnimatePresence>
+                {
+                    !isgameOver &&
+                    <AnimatePresence>
+                        {
+                            Array.from({length: score.lives}).map((_, i) => 
+                                <Life key={`life-${gameId}-${i}`} />
+                            )
+                        }
+                    </AnimatePresence>
+                }
+                {
+                    isgameOver &&
+                    <GameOverBox />
+                }
             </span>
         </div>
     )
