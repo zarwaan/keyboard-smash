@@ -2,6 +2,7 @@ import { QwertyRows } from "@/configs/keys.config";
 import { createContext, useContext, useEffect, useRef, useState } from "react"
 import { useGameSettingsContext } from "./GameSettingsProvider";
 import { difficulties } from "@/configs/difficulties.config";
+import { useSoundContext } from "./SoundProvider";
 
 interface Target {
     key: string,
@@ -53,6 +54,7 @@ const GameContext = createContext<GameState>({
 export default function GameProvider({children} : {children: React.ReactNode}) {
 
     const { difficulty, playMode } = useGameSettingsContext();
+    const { bombEffect, hitEffect, missEffect, bgMusic, gameOverEffect } = useSoundContext();
     const { targetInterval, timeActive, bombProbability} = difficulties[difficulty];
 
     const playModeRef = useRef<typeof playMode>(playMode);
@@ -99,6 +101,7 @@ export default function GameProvider({children} : {children: React.ReactNode}) {
     const startGame = () => {
         resetGame();
         setGameState('ongoing');
+        bgMusic.play();
     }
 
     const stopGame = () => {
@@ -107,6 +110,7 @@ export default function GameProvider({children} : {children: React.ReactNode}) {
         setIsPaused(false);
         setTargetKeys([]);
         setScore(initScore);
+        bgMusic.stop();
     }
 
     const pauseGame = () => {
@@ -115,6 +119,7 @@ export default function GameProvider({children} : {children: React.ReactNode}) {
             setIsPaused(true);
             pausedTimeRef.current = Date.now();
         }
+        bgMusic.pause();
     }
 
     const resumeGame = () => {
@@ -124,6 +129,7 @@ export default function GameProvider({children} : {children: React.ReactNode}) {
             setIsPaused(false);
             setTargetKeys(prev => prev.map(target => ({...target, expiresAt : target.expiresAt + pausedDuration})))
         }
+        bgMusic.play();
     }
     
     const getNameOfKey = (e: KeyboardEvent) : string => {
@@ -215,14 +221,16 @@ export default function GameProvider({children} : {children: React.ReactNode}) {
                 setScore(prev => ({
                     ...prev,
                     targetsHit: prev.targetsHit+1,
-                }))
+                }));
+                hitEffect.play();
             }
             else{
                 setScore(prev => ({
                     ...prev,
                     bombsHit: prev.bombsHit+1,
                     lives: playModeRef.current==="infinite" ? prev.lives : prev.lives - 2
-                }))
+                }));
+                bombEffect.play();
             }
             setTargetKeys(prev => prev.filter(target => target.key !== hit.key))
         }
@@ -267,6 +275,7 @@ export default function GameProvider({children} : {children: React.ReactNode}) {
                     targetsMissed: prev.targetsMissed + missedCount,
                     lives: playModeRef.current==="infinite" ? prev.lives : prev.lives - missedCount
                 }));
+                missEffect.play();
             }
 
             if (expiredTargets.length > 0) {
@@ -316,6 +325,7 @@ export default function GameProvider({children} : {children: React.ReactNode}) {
             setIsGameOver(true);
             pauseGame();
             console.log("Game over");
+            gameOverEffect.play();
         }
     },[score.lives])
 
