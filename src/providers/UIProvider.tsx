@@ -10,6 +10,14 @@ interface UIState {
     currentTheme : theme,
     setLightTheme : () => void,
     setDarkTheme : () => void
+
+    isMusicMuted : boolean,
+    muteMusic : () => void,
+    unmuteMusic : () => void,
+
+    areEffectsMuted : boolean,
+    muteEffects : () => void,
+    unmuteEffects : () => void
 }
 
 const UIContext = createContext<UIState>({
@@ -19,7 +27,15 @@ const UIContext = createContext<UIState>({
 
     currentTheme : window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light',
     setLightTheme: () => {},
-    setDarkTheme: () => {}
+    setDarkTheme: () => {},
+
+    isMusicMuted : false,
+    muteMusic : () => {},
+    unmuteMusic : () => {},
+
+    areEffectsMuted : false,
+    muteEffects : () => {},
+    unmuteEffects : () => {},
 })
 
 export default function UIProvider({children} : {children: React.ReactNode}) {
@@ -39,10 +55,20 @@ export default function UIProvider({children} : {children: React.ReactNode}) {
         document.documentElement.setAttribute('data-theme', 'dark')
     }
 
+    const [isMusicMuted, setIsMusicMuted] = useState(false);
+    const muteMusic = () => setIsMusicMuted(true);
+    const unmuteMusic = () => setIsMusicMuted(false);
+
+    const [areEffectsMuted, setAreEffectsMuted] = useState(false);
+    const muteEffects = () => setAreEffectsMuted(true);
+    const unmuteEffects = () => setAreEffectsMuted(false);
+
     return (
         <UIContext.Provider value={{
             isSettingsOpen, openSettings, closeSettings, 
-            currentTheme, setLightTheme, setDarkTheme
+            currentTheme, setLightTheme, setDarkTheme,
+            isMusicMuted, muteMusic, unmuteMusic,
+            areEffectsMuted, muteEffects, unmuteEffects
         }}>
             {children}
         </UIContext.Provider>

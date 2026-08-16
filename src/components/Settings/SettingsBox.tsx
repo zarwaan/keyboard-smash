@@ -2,12 +2,14 @@ import SectionBox from "./Section/SectionBox";
 import SectionHeader from "./Section/SectionHeader";
 import SectionBody from "./Section/SectionBody";
 import SectionOption from "./Section/SectionOption";
-import ThemeToggle from "./ThemeToggle/ThemeToggle";
+import ThemeToggle from "./Toggles/ThemeToggle";
 import { useUIContext } from "@/providers/UIProvider";
 import { AnimatePresence, motion } from "motion/react";
 import GameModeDropdown from "./Dropdowns/GameModeDropdown";
 import DifficultyDropdown from "./Dropdowns/DifficultyDropdown";
 import { useEffect } from "react";
+import MusicToggle from "./Toggles/MusicToggle";
+import EffectsToggle from "./Toggles/EffectsToggle";
 
 export default function SettingsBox() {
     const {isSettingsOpen, closeSettings} = useUIContext();
@@ -62,6 +64,19 @@ export default function SettingsBox() {
                             <SectionOption>
                                 <span>Difficulty Level</span>
                                 <DifficultyDropdown z={-2} />
+                            </SectionOption>
+                        </SectionBody>
+                    </SectionBox>
+                    <SectionBox>
+                        <SectionHeader title="Audio" />
+                        <SectionBody>
+                            <SectionOption>
+                                <span>Music</span>
+                                <MusicToggle />
+                            </SectionOption>
+                            <SectionOption>
+                                <span>Effects</span>
+                                <EffectsToggle />
                             </SectionOption>
                         </SectionBody>
                     </SectionBox>

@@ -1,4 +1,5 @@
 import { AUDIO_TRACKS } from "@/configs/sounds.configs";
+import { useUIContext } from "@/providers/UIProvider";
 import { useRef } from "react";
 
 export interface AudioController {
@@ -8,6 +9,7 @@ export interface AudioController {
 }
 
 export default function useAudioPool(id: keyof typeof AUDIO_TRACKS) {
+    const {isMusicMuted, areEffectsMuted} = useUIContext();
     const thisAudio = AUDIO_TRACKS[id]
     const pool = 
     useRef(
@@ -25,6 +27,11 @@ export default function useAudioPool(id: keyof typeof AUDIO_TRACKS) {
     const play = () => {
         const a = thisAudio.poolSize === 1 ? pool.current[0] : pool.current.find(a => a.paused);
         if(!a) return
+        if(
+            thisAudio.audioType === "Music" && !isMusicMuted
+            ||
+            thisAudio.audioType === "Effect" && !areEffectsMuted
+        )
         a.play();
     };
 
