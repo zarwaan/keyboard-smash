@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 @utility theme-transition {
-  @apply transition-colors duration-300
+  @apply transition-colors duration-300 ;
 }
 
 :root {
