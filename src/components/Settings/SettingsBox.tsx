@@ -40,7 +40,7 @@ export default function SettingsBox() {
                     duration: 0.4
                 }}
             >
-                <div className="text-xl w-[calc(100%+32px)] -ml-4 -mt-2 font-bold bordr border-green-500
+                <div className="text-2xl w-[calc(100%+32px)] -ml-4 -mt-2 font-bold bordr border-green-500
                                 border-b-x pb-x">
                     Game Options
                 </div>

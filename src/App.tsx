@@ -24,7 +24,7 @@ function AppContent() {
 		<>
 			<ContentLayout />
 			<AnimatePresence>
-				{uictx.isSettingsOpen && <BackgroundBlur />}
+				{(uictx.isSettingsOpen || uictx.isInstructionOpen) && <BackgroundBlur />}
 			</AnimatePresence>
 		</>
 	)

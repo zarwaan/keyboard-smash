@@ -1,3 +1,4 @@
+import useBooleanState from "@/hooks/useBooleanState";
 import { createContext, useContext, useState } from "react"
 
 type theme = 'light' | 'dark';
@@ -6,6 +7,10 @@ interface UIState {
     isSettingsOpen : boolean,
     openSettings : () => void,
     closeSettings : () => void,
+
+    isInstructionOpen : boolean,
+    openInstruction : () => void,
+    closeInstruction : () => void,
 
     currentTheme : theme,
     setLightTheme : () => void,
@@ -25,6 +30,10 @@ const UIContext = createContext<UIState>({
     openSettings : () => {},
     closeSettings: () => {},
 
+    isInstructionOpen : false,
+    openInstruction : () => {},
+    closeInstruction : () => {},
+
     currentTheme : window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light',
     setLightTheme: () => {},
     setDarkTheme: () => {},
@@ -39,9 +48,8 @@ const UIContext = createContext<UIState>({
 })
 
 export default function UIProvider({children} : {children: React.ReactNode}) {
-    const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-    const openSettings = () => {setIsSettingsOpen(true)};
-    const closeSettings = () => {setIsSettingsOpen(false)};
+    const [ isSettingsOpen, openSettings, closeSettings ] = useBooleanState(false);
+    const [isInstructionOpen, openInstruction, closeInstruction] = useBooleanState(false);
 
     const [currentTheme, setCurrentTheme] = useState<theme>(
         document.documentElement.getAttribute('data-theme') as theme
@@ -55,17 +63,13 @@ export default function UIProvider({children} : {children: React.ReactNode}) {
         document.documentElement.setAttribute('data-theme', 'dark')
     }
 
-    const [isMusicMuted, setIsMusicMuted] = useState(false);
-    const muteMusic = () => setIsMusicMuted(true);
-    const unmuteMusic = () => setIsMusicMuted(false);
-
-    const [areEffectsMuted, setAreEffectsMuted] = useState(false);
-    const muteEffects = () => setAreEffectsMuted(true);
-    const unmuteEffects = () => setAreEffectsMuted(false);
+    const [isMusicMuted, muteMusic, unmuteMusic] = useBooleanState(false);
+    const [areEffectsMuted, muteEffects, unmuteEffects] = useBooleanState(false);
 
     return (
         <UIContext.Provider value={{
             isSettingsOpen, openSettings, closeSettings, 
+            isInstructionOpen, openInstruction, closeInstruction,
             currentTheme, setLightTheme, setDarkTheme,
             isMusicMuted, muteMusic, unmuteMusic,
             areEffectsMuted, muteEffects, unmuteEffects
