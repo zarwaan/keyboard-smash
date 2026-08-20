@@ -12,7 +12,7 @@ export default function Header({}) {
 
     return (
         <div className=" w-full text-7xl text-indigo-500 font-black theme-transition font-(family-name:--header-font) tracking-wider relative 
-        flex flex-row gap-2 flex-center">
+        flex flex-row gap-3 flex-center">
             <span ref={heightToBeRef} className="h-fit">Keyboard</span> 
             <span style={{
                 height: `${h+20}px`

@@ -9,7 +9,8 @@ export default function Lives({}) {
         <div className="w-full p-1 flex flex-row gap-4 flex-center">
             <span className="flex flex-row gap-2">
                 {
-                    !isgameOver &&
+                    !isgameOver
+                    &&
                     <AnimatePresence>
                         {
                             Array.from({length: score.lives}).map((_, i) => 
@@ -19,7 +20,8 @@ export default function Lives({}) {
                     </AnimatePresence>
                 }
                 {
-                    isgameOver &&
+                    isgameOver
+                    &&
                     <GameOverBox />
                 }
             </span>

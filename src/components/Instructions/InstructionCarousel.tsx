@@ -1,15 +1,18 @@
 import { AnimatePresence, motion, usePresenceData, wrap } from "motion/react"
 import { forwardRef, type SVGProps, useState } from "react"
-import InstructionTemplate from "./Instruction/InstructionTemplate";
+import InstructionTemplate from "./InstructionTemplate";
+import { useUIContext } from "@/providers/UIProvider";
 
 const INSTRUCTIONS = [
-    <InstructionTemplate title={`1. Try to hit all targets in green (-1 \u00A0❤️\u00A0 if you miss)`} imgName="target"/>,
+    <InstructionTemplate title={`1. Hit the targets! (-1 \u00A0❤️\u00A0 if you miss)`} imgName="target"/>,
     <InstructionTemplate title={"2. Watch out for bombs! (-2 \u00A0❤️\u00A0 if you hit)"} imgName="bomb"/>,
-    <InstructionTemplate title="3. Keep an eye on your scoreboard and lives" imgName="score"/>,
-    <InstructionTemplate title="4. Don't run out of lives" imgName="game-over"/>
+    <InstructionTemplate title="3. Keep an eye on the scoreboard!" imgName="score"/>,
+    <InstructionTemplate title="4. Don't run out of lives!" imgName="game-over"/>,
+    <InstructionTemplate title="5. Adjust gameplay in settings" imgName="settings"/>
 ]
 
 export default function InstructionCarousel() {
+    const {closeInstruction} = useUIContext();
     const items = INSTRUCTIONS.map((_,i) => i);
     const [selectedItem, setSelectedItem] = useState(items[0])
     const [direction, setDirection] = useState<1 | -1>(1)
@@ -45,10 +48,10 @@ export default function InstructionCarousel() {
                 </AnimatePresence>
             </div>
             <div className="flex flex-row justify-around w-full">
-                <NavButton handleClick={() => setSlide(-1)}>
+                <NavButton handleClick={() => {if(selectedItem===0) return; setSlide(-1)}}>
                     <ArrowLeft />
                 </NavButton>
-                <NavButton handleClick={() => setSlide(1)}>
+                <NavButton handleClick={() => {if(selectedItem===items.length-1) {closeInstruction(); return;} setSlide(1)}}>
                     <ArrowRight />
                 </NavButton>
             </div>
@@ -69,8 +72,9 @@ const Slide = forwardRef(function Slide(
                 opacity: 1,
                 x: 0,
                 transition: {
-                    ease: "easeInOut",
-                    duration: 0.4
+                    ease: "anticipate",
+                    type: 'spring',
+                    duration: 0.8
                 },
             }}
             exit={{ opacity: 0, x: direction * -30 }}
