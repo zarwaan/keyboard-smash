@@ -6,15 +6,19 @@ import AppProviders from './providers/AppProviders'
 import { useUIContext } from './providers/UIProvider'
 import { useEffect } from 'react'
 import { AnimatePresence } from 'motion/react'
+import { Analytics } from '@vercel/analytics/react'
 
 function App() {
 	useEffect(() => {
 		document.body.classList.add('theme-transition');
 	});
 	return (
-		<AppProviders>
-			<AppContent />
-		</AppProviders>
+		<>
+			<Analytics />
+			<AppProviders>
+				<AppContent />
+			</AppProviders>
+		</>
 	)
 }
 
