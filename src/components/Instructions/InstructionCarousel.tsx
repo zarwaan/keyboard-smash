@@ -37,8 +37,8 @@ export default function InstructionCarousel() {
     }
 
     return (
-        <div className="flex flex-center flex-col">
-            <div className="flex flex-center">
+        <div className="flex flex-center flex-col h-full">
+            <div className="flex grow">
                 <AnimatePresence
                     custom={direction}
                     initial={false}
@@ -47,7 +47,7 @@ export default function InstructionCarousel() {
                     <Slide key={"page-"+selectedItem} page={page} />
                 </AnimatePresence>
             </div>
-            <div className="flex flex-row justify-around w-full">
+            <div className="flex flex-row justify-around w-full borde border-purple-500">
                 <NavButton handleClick={() => {if(selectedItem===0) return; setSlide(-1)}}>
                     <ArrowLeft />
                 </NavButton>
@@ -78,7 +78,6 @@ const Slide = forwardRef(function Slide(
                 },
             }}
             exit={{ opacity: 0, x: direction * -30 }}
-            className="h-100"
         >
             {page}
         </motion.div>

@@ -5,14 +5,14 @@ export default function InstructionTemplate({title, imgName}: {title: string, im
 }) {
     const {currentTheme} = useUIContext();
     return (
-        <div className="flex flex-col gap-5 ">
-            <div className="borde text-(--text-color) text-left theme-transition">
+        <div className="flex flex-col gap-0 h-full">
+            <div className="borde text-(--text-color) text-left theme-transition borde">
                 <span className="font-bold text-lg">{title}</span>
                 <hr className="border-t-2 border-(--text-color)/30" />
             </div>
-            <div className="flex flex-center">
+            <div className="flex flex-center borde border-amber-500 grow">
                 <img src={`/screenshots/instructions/${currentTheme}/${imgName}.jpg`} alt={imgName} 
-                className={`${imgName==='settings' ? 'w-65/100 rounded-xl' : ''}`}/>
+                className={`${imgName==='settings' ? 'w-80/100 rounded-xl' : ''}`}/>
             </div>
         </div>
     )
