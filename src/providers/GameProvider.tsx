@@ -17,6 +17,13 @@ interface Score {
     lives: number;
 }
 
+interface HitEvent {
+    id: string;
+    key: string;
+    type: "target" | "bomb";
+    expiresAt : number
+}
+
 interface GameState {
     gameId: number;
     pressedKeys : Set<string>;
@@ -24,6 +31,8 @@ interface GameState {
     targetKeys : Target[];
     isHitTarget : (keyValue: string) => boolean;
     isBomb : (keyValue: string) => boolean;
+    hitEvents : HitEvent[];
+    hitEvent : (keyValue: string) => HitEvent | undefined;
     gameState : 'ongoing' | 'stopped';
     isPaused : boolean ;
     isgameOver: boolean ;
@@ -41,6 +50,8 @@ const GameContext = createContext<GameState>({
     targetKeys : [],
     isHitTarget : () => false,
     isBomb : () => false,
+    hitEvents : [],
+    hitEvent : () => undefined ,
     gameState : 'stopped',
     isPaused : false,
     startGame : () => {},
@@ -70,6 +81,9 @@ export default function GameProvider({children} : {children: React.ReactNode}) {
     const isBomb = (keyValue: string) => targetKeys.some(target => target.key.toLowerCase() === keyValue.toLowerCase() && target.isBomb);
     const [score, setScore] = useState<Score>({targetsHit:0, bombsHit: 0, targetsMissed: 0, lives: 7});
     const [gameId, setGameId] = useState(0);
+
+    const [hitEvents, setHitEvents] = useState<HitEvent[]>([]);
+    const hitEvent = (keyValue: string) => hitEvents.find(event => event.key.toLowerCase() === keyValue.toLowerCase());
     
     const initScore: Score = {
         targetsHit:0, bombsHit: 0, targetsMissed: 0, lives: 7
@@ -217,6 +231,15 @@ export default function GameProvider({children} : {children: React.ReactNode}) {
     useEffect(() => {
         let hit = targetKeys.find(target => pressedKeys.has(target.key.toLowerCase())); 
         if(hit){
+            setHitEvents(prev => [
+                ...prev,
+                {
+                    id: crypto.randomUUID(),
+                    key: hit.key,
+                    type: hit.isBomb ? "bomb" : "target",
+                    expiresAt: Date.now() + 500
+                }
+            ]);
             if(!hit.isBomb){
                 setScore(prev => ({
                     ...prev,
@@ -240,22 +263,6 @@ export default function GameProvider({children} : {children: React.ReactNode}) {
         window.addEventListener('keydown',handleKeyDown);
         window.addEventListener('keyup',handleKeyUp);
 
-        // const cleanupInterval = window.setInterval(() => {
-        //     if (isPausedRef.current) return;
-
-        //     setTargetKeys(prev => {
-        //         const missedTargets = prev.filter(
-        //             target => target.expiresAt <= Date.now() && !target.isBomb
-        //         );
-
-        //         missedTargetsRef.current = missedTargets.length;
-
-        //         return prev.filter(
-        //             target => target.expiresAt > Date.now()
-        //         );
-        //     });
-        // }, 100);
-
         const cleanupInterval = window.setInterval(() => {
             if (isPausedRef.current) return;
 
@@ -268,6 +275,10 @@ export default function GameProvider({children} : {children: React.ReactNode}) {
             const missedCount = expiredTargets.filter(
                 target => !target.isBomb
             ).length;
+
+            setHitEvents(prev =>
+                prev.filter(event => event.expiresAt > now)
+            );
 
             if (missedCount > 0) {
                 setScore(prev => ({
@@ -332,7 +343,7 @@ export default function GameProvider({children} : {children: React.ReactNode}) {
     return (
         <GameContext.Provider value={{
             pressedKeys, isPressed, targetKeys, isHitTarget, isBomb, isgameOver, gameId,
-            gameState,isPaused,startGame,stopGame,pauseGame,resumeGame, score
+            gameState,isPaused,startGame,stopGame,pauseGame,resumeGame, score, hitEvents, hitEvent
         }}>
             {children}
         </GameContext.Provider>

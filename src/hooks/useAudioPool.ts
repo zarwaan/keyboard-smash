@@ -1,6 +1,6 @@
 import { AUDIO_TRACKS } from "@/configs/sounds.configs";
 import { useUIContext } from "@/providers/UIProvider";
-import { useRef } from "react";
+import { useMemo, useRef } from "react";
 
 export interface AudioController {
     play: () => void,
@@ -48,11 +48,11 @@ export default function useAudioPool(id: keyof typeof AUDIO_TRACKS) {
         a.pause();
     }
 
-    const controller : AudioController = {
+    const controller : AudioController = useMemo(() =>  { return {
         play,
         stop,
         pause 
-    }
+    }}, [play,stop,pause])
 
     return controller
 }
