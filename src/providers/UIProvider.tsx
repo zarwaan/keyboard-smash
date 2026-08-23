@@ -1,9 +1,10 @@
 import useBooleanState from "@/hooks/useBooleanState";
-import { createContext, useContext, useState } from "react"
+import usePersistentState from "@/hooks/usePersistentState";
+import { createContext, useContext } from "react"
 
 type theme = 'light' | 'dark';
 
-interface UIState {
+export interface UIState {
     isSettingsOpen : boolean,
     openSettings : () => void,
     closeSettings : () => void,
@@ -51,9 +52,14 @@ export default function UIProvider({children} : {children: React.ReactNode}) {
     const [ isSettingsOpen, openSettings, closeSettings ] = useBooleanState(false);
     const [isInstructionOpen, openInstruction, closeInstruction] = useBooleanState(false);
 
-    const [currentTheme, setCurrentTheme] = useState<theme>(
-        document.documentElement.getAttribute('data-theme') as theme
+    // const [currentTheme, setCurrentTheme] = useState<theme>(
+    //     document.documentElement.getAttribute('data-theme') as theme
+    // );
+
+    const [currentTheme, setCurrentTheme] = usePersistentState<theme>(
+       "currentTheme", document.documentElement.getAttribute('data-theme') as theme
     );
+
     const setLightTheme = () => {
         setCurrentTheme('light');
         document.documentElement.setAttribute('data-theme', 'light')
