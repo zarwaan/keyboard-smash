@@ -1,11 +1,11 @@
 import { useState } from 'react';
-import usePersistentState, { initSettings } from './usePersistentState';
+import usePersistentState, { type UserSettingKey } from './usePersistentState';
 
 export default function useBooleanState(
     initialValue: boolean = false, 
     persistOptions: {
         persist: boolean,
-        persistKey: keyof typeof initSettings | undefined
+        persistKey: UserSettingKey | undefined
     } = {
         persist: false,
         persistKey: undefined
@@ -21,7 +21,6 @@ export default function useBooleanState(
     usePersistentState<boolean>(persistOptions.persistKey, initialValue)
     :
     useState<boolean>(initialValue)
-
 
     const setTrue = () => setValue(true)
     const setFalse = () => setValue(false)

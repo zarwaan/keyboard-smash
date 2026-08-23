@@ -22,9 +22,6 @@ const GameSettingsContext = createContext<GameSettings>({
 
 export default function GameSettingsProvider({children} : {children: React.ReactNode}) {
     const [includeSpecialKeys, setIncludeSpecialKeys] = useState(true);
-
-    //const [playMode, setPlayMode] = useState<GameSettings['playMode']>("lives");
-    //const [difficulty, setDifficulty] = useState<GameSettings['difficulty']>("easy");
     
     const [playMode, setPlayMode] = usePersistentState<GameSettings['playMode']>("playMode","lives");
     const [difficulty, setDifficulty] = usePersistentState<GameSettings['difficulty']>("difficulty","easy");

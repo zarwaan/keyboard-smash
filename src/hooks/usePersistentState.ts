@@ -10,45 +10,51 @@ export interface UserSettings {
     areEffectsMuted: UIState['areEffectsMuted'];
 }
 
-export const initSettings = {} as UserSettings;
+export type UserSettingKey = keyof UserSettings;
 
-function fetchLocalStorageItem(){
+function fetchLocalStorageItem() : UserSettings | undefined {
     const stored = localStorage.getItem("keyboard-smash-settings");
-    let parsed: UserSettings | undefined;
-    if(stored) 
-        parsed = JSON.parse(stored); 
+    if(!stored) return undefined;
 
-    return parsed
+    try {
+        return JSON.parse(stored)
+    }
+    catch {
+        return undefined
+    }
 }
 
-export default function usePersistentState<T>(setting: keyof typeof initSettings, defaultValue: T) {
+export default function usePersistentState<T>(setting: UserSettingKey, defaultValue: T) {
     const parsed = fetchLocalStorageItem();
 
-    let settingValue: UserSettings[typeof setting];
-
-    if(parsed){
-        settingValue = parsed[setting]
-    }
-
     const [state, SetState] = useState<T>(() => {
-        if(parsed && settingValue) return settingValue as T;
+        if (parsed && setting in parsed) {
+            return parsed[setting] as T;
+        }
+
         return defaultValue
     });
 
     const setPersistentState = (value: React.SetStateAction<T>) => {
-        SetState(value);
-        let newSettings: Partial<UserSettings> = {};
-        const newParsed = fetchLocalStorageItem();
+        SetState(prev => {
+            const next =
+                typeof value === "function"
+                    ? (value as (prevState: T) => T)(prev)
+                    : value;
 
-        if(newParsed){
-            newSettings = {...newParsed}
-        }
-        newSettings = {
-            ...newSettings,
-            [setting] : value
-        }
-        localStorage.setItem("keyboard-smash-settings", JSON.stringify(newSettings))
-    }
+            const existing = fetchLocalStorageItem() ?? {};
+
+            localStorage.setItem(
+                "keyboard-smash-settings",
+                JSON.stringify({
+                    ...existing,
+                    [setting]: next
+                })
+            );
+
+            return next;
+        });
+    };
 
     return [state, setPersistentState] as const
 }

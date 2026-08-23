@@ -52,10 +52,6 @@ export default function UIProvider({children} : {children: React.ReactNode}) {
     const [ isSettingsOpen, openSettings, closeSettings ] = useBooleanState(false);
     const [isInstructionOpen, openInstruction, closeInstruction] = useBooleanState(false);
 
-    // const [currentTheme, setCurrentTheme] = useState<theme>(
-    //     document.documentElement.getAttribute('data-theme') as theme
-    // );
-
     const [currentTheme, setCurrentTheme] = usePersistentState<theme>(
        "currentTheme", document.documentElement.getAttribute('data-theme') as theme
     );
@@ -73,6 +69,7 @@ export default function UIProvider({children} : {children: React.ReactNode}) {
         persist: true,
         persistKey: 'isMusicMuted'
     });
+
     const [areEffectsMuted, muteEffects, unmuteEffects] = useBooleanState(false, {
         persist: true,
         persistKey: 'areEffectsMuted'
