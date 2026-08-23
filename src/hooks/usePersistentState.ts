@@ -10,7 +10,7 @@ export interface UserSettings {
     areEffectsMuted: UIState['areEffectsMuted'];
 }
 
-const initSettings = {} as UserSettings;
+export const initSettings = {} as UserSettings;
 
 function fetchLocalStorageItem(){
     const stored = localStorage.getItem("keyboard-smash-settings");
@@ -22,17 +22,9 @@ function fetchLocalStorageItem(){
 }
 
 export default function usePersistentState<T>(setting: keyof typeof initSettings, defaultValue: T) {
-    // const stored = localStorage.getItem("keyboard-smash-settings");
-    // let parsed: UserSettings
-
     const parsed = fetchLocalStorageItem();
 
     let settingValue: UserSettings[typeof setting];
-
-    // if(stored){
-    //     parsed = JSON.parse(stored)
-    //     settingValue = parsed[setting]
-    // }
 
     if(parsed){
         settingValue = parsed[setting]

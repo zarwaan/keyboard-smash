@@ -69,8 +69,14 @@ export default function UIProvider({children} : {children: React.ReactNode}) {
         document.documentElement.setAttribute('data-theme', 'dark')
     }
 
-    const [isMusicMuted, muteMusic, unmuteMusic] = useBooleanState(false);
-    const [areEffectsMuted, muteEffects, unmuteEffects] = useBooleanState(false);
+    const [isMusicMuted, muteMusic, unmuteMusic] = useBooleanState(false, {
+        persist: true,
+        persistKey: 'isMusicMuted'
+    });
+    const [areEffectsMuted, muteEffects, unmuteEffects] = useBooleanState(false, {
+        persist: true,
+        persistKey: 'areEffectsMuted'
+    });
 
     return (
         <UIContext.Provider value={{
