@@ -1,8 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 
-// Normalizes a raw KeyboardEvent into the string your target keys use.
-// Kept as a plain function (not part of the hook) so it's easy to unit test
-// or reuse elsewhere without pulling in React.
 function getNameOfKey(e: KeyboardEvent): string {
     const disabledKeys = ["control", "alt", "arrowup", "arrowdown", "arrowleft", "arrowright"];
     if (e.key.toLowerCase() === "shift") return e.code.toLowerCase();
@@ -12,16 +9,9 @@ function getNameOfKey(e: KeyboardEvent): string {
     return e.key.toLowerCase();
 }
 
-/**
- * Tracks which keys are currently held down. `enabled` lets the caller
- * suppress input (e.g. while the game is paused) without having to
- * add/remove the window listeners themselves.
- */
 export function useKeyboardInput(enabled: boolean) {
     const [pressedKeys, setPressedKeys] = useState<Set<string>>(new Set());
 
-    // Listeners are attached once; `enabledRef` lets them read the latest
-    // `enabled` value without needing to be re-attached every time it changes.
     const enabledRef = useRef(enabled);
     useEffect(() => {
         enabledRef.current = enabled;
@@ -37,7 +27,6 @@ export function useKeyboardInput(enabled: boolean) {
 
             setPressedKeys(prev => new Set(prev).add(key));
 
-            // Caps Lock never fires keyup reliably, so we clear it ourselves.
             if (key === "caps lock") {
                 setTimeout(() => {
                     setPressedKeys(prev => {

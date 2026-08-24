@@ -51,9 +51,6 @@ export type GameAction =
     | { type: "EXPIRE_TARGETS"; now: number; infiniteLives: boolean }
     | { type: "CLEANUP_HIT_EVENTS"; now: number };
 
-// Every place lives can drop funnels through here — this is the single
-// spot that knows about "infinite mode", instead of that check being
-// copy-pasted at each call site like in the original.
 function applyLivesDelta(score: Score, delta: number, infiniteLives: boolean): Score {
     return { ...score, lives: infiniteLives ? score.lives : score.lives - delta };
 }
@@ -81,7 +78,7 @@ export function gameReducer(state: GameReducerState, action: GameAction): GameRe
 
         case "ADD_TARGET": {
             const occupied = new Set(state.targetKeys.map(t => t.key));
-            if (occupied.has(action.target.key)) return state; // guard against a stale race
+            if (occupied.has(action.target.key)) return state;
             return { ...state, targetKeys: [...state.targetKeys, action.target] };
         }
 

@@ -61,9 +61,6 @@ export default function GameProvider({ children }: { children: React.ReactNode }
     const [state, dispatch] = useReducer(gameReducer, initialGameState);
     const { pressedKeys, isPressed } = useKeyboardInput(!state.isPaused);
 
-    // The setInterval callbacks below close over whatever `state`/`playMode`
-    // looked like when the interval was created, so they read through refs
-    // instead to always see the latest values.
     const stateRef = useRef(state);
     useEffect(() => {
         stateRef.current = state;
@@ -76,15 +73,12 @@ export default function GameProvider({ children }: { children: React.ReactNode }
 
     const isInfiniteLives = () => playModeRef.current === "infinite";
 
-    // --- derived lookups, no state of their own ----------------------------
     const isHitTarget = (keyValue: string) =>
         state.targetKeys.some(t => t.key.toLowerCase() === keyValue.toLowerCase() && !t.isBomb);
     const isBomb = (keyValue: string) =>
         state.targetKeys.some(t => t.key.toLowerCase() === keyValue.toLowerCase() && t.isBomb);
     const hitEvent = (keyValue: string) =>
         state.hitEvents.find(e => e.key.toLowerCase() === keyValue.toLowerCase());
-
-    // --- controls exposed to consumers --------------------------------------
     const pausedAtRef = useRef(0);
 
     const startGame = () => {
@@ -108,7 +102,6 @@ export default function GameProvider({ children }: { children: React.ReactNode }
         bgMusic.play();
     };
 
-    // --- a held key landing on a live target counts as a hit ---------------
     useEffect(() => {
         const target = state.targetKeys.find(t => pressedKeys.has(t.key.toLowerCase()));
         if (!target) return;
@@ -117,7 +110,6 @@ export default function GameProvider({ children }: { children: React.ReactNode }
         (target.isBomb ? bombEffect : hitEffect).play();
     }, [pressedKeys]);
 
-    // --- spawns new targets while the game is running -----------------------
     useEffect(() => {
         if (state.gameState !== "ongoing") return;
 
@@ -139,7 +131,6 @@ export default function GameProvider({ children }: { children: React.ReactNode }
         return () => window.clearInterval(id);
     }, [state.gameState, targetInterval, timeActive, bombProbability]);
 
-    // --- expires stale targets & prunes finished hit-event animations -------
     useEffect(() => {
         const id = window.setInterval(() => {
             if (stateRef.current.isPaused) return;
@@ -155,7 +146,6 @@ export default function GameProvider({ children }: { children: React.ReactNode }
         return () => window.clearInterval(id);
     }, []);
 
-    // --- reacts once when lives hit zero -------------------------------------
     useEffect(() => {
         if (!state.isGameOver) return;
         pauseGame();
