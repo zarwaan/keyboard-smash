@@ -26,27 +26,7 @@ export interface UIState {
     unmuteEffects : () => void
 }
 
-const UIContext = createContext<UIState>({
-    isSettingsOpen: false,
-    openSettings : () => {},
-    closeSettings: () => {},
-
-    isInstructionOpen : false,
-    openInstruction : () => {},
-    closeInstruction : () => {},
-
-    currentTheme : window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light',
-    setLightTheme: () => {},
-    setDarkTheme: () => {},
-
-    isMusicMuted : false,
-    muteMusic : () => {},
-    unmuteMusic : () => {},
-
-    areEffectsMuted : false,
-    muteEffects : () => {},
-    unmuteEffects : () => {},
-})
+const UIContext = createContext<UIState>({} as UIState)
 
 export default function UIProvider({children} : {children: React.ReactNode}) {
     const [ isSettingsOpen, openSettings, closeSettings ] = useBooleanState(false);

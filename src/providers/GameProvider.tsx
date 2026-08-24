@@ -25,24 +25,7 @@ interface GameState {
     score: Score;
 }
 
-const GameContext = createContext<GameState>({
-    gameId: 0,
-    pressedKeys: new Set<string>(),
-    isPressed: () => false,
-    targetKeys: [],
-    isHitTarget: () => false,
-    isBomb: () => false,
-    hitEvents: [],
-    hitEvent: () => undefined,
-    gameState: "stopped",
-    isPaused: false,
-    startGame: () => {},
-    stopGame: () => {},
-    pauseGame: () => {},
-    resumeGame: () => {},
-    score: { targetsHit: 0, bombsHit: 0, targetsMissed: 0, lives: 7 },
-    isgameOver: false,
-});
+const GameContext = createContext<GameState>({} as GameState)
 
 const ACTIVE_ROWS = [QwertyRows[1], QwertyRows[2], QwertyRows[3], QwertyRows[4]];
 const ALL_KEYS = ACTIVE_ROWS.flat().map(key => key.toLowerCase());

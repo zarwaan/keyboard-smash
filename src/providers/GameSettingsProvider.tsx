@@ -11,14 +11,7 @@ export interface GameSettings {
     setDifficulty : (_ : GameSettings['difficulty']) => void
 }
 
-const GameSettingsContext = createContext<GameSettings>({
-    includeSpecialKeys: true,
-    playMode: "lives",
-    difficulty: "easy",
-    setIncludeSpecialKeys: () => {},
-    setPlayMode: () => {},
-    setDifficulty: () => {}
-})
+const GameSettingsContext = createContext<GameSettings>({} as GameSettings)
 
 export default function GameSettingsProvider({children} : {children: React.ReactNode}) {
     const [includeSpecialKeys, setIncludeSpecialKeys] = useState(true);

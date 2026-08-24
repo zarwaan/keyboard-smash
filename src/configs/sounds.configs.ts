@@ -20,7 +20,7 @@ export const AUDIO_TRACKS = {
     },
     'hit' : {
         src: hitEffect,
-        volume: 1,
+        volume: 0.8,
         poolSize: 5,
         audioType: "Effect"
     },
