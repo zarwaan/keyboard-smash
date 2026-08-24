@@ -14,7 +14,7 @@ export default function Score({}) {
             {
                 playMode!=="infinite" && gameState!=='stopped' &&
                 <>
-                    <div className="flex flex-row gap-10">
+                    <div className="flex flex-row gap-10 font-(family-name:--header-font) tracking-widest text-[40px]">
                         <span>Targets hit : {score.targetsHit}</span>
                         <span>Targets missed : {score.targetsMissed}</span>
                         <span>Bombs hit : {score.bombsHit}</span>
