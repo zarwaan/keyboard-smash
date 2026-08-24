@@ -8,6 +8,7 @@ export interface UserSettings {
     difficulty: GameSettings['difficulty'];
     isMusicMuted: UIState['isMusicMuted'];
     areEffectsMuted: UIState['areEffectsMuted'];
+    isFirstTime: UIState['isFirstTime']
 }
 
 export type UserSettingKey = keyof UserSettings;
