@@ -37,13 +37,7 @@ export default function UIProvider({children} : {children: React.ReactNode}) {
     const [ isSettingsOpen, openSettings, closeSettings ] = useBooleanState(false);
     const [isInstructionOpen, openInstruction, closeInstruction] = useBooleanState(false);
     const [isFirstTime, setIsFirstTime] = usePersistentState<boolean>('isFirstTime', true);
-    const [walkthroughPhase, setWalkthroughPhase] = useState<WalkthroughPhaseType>('$$OVER$$');
-
-    useEffect(() => {
-        if(isFirstTime) {
-            setWalkthroughPhase('instructions')
-        }
-    },[isFirstTime])
+    const [walkthroughPhase, setWalkthroughPhase] = useState<WalkthroughPhaseType>(isFirstTime ? 'instructions' : '$$OVER$$');
 
     useEffect(() => {
         if(walkthroughPhase==='$$OVER$$') 
