@@ -3,10 +3,12 @@ import Lives from "./Lives";
 import { useGameSettingsContext } from "@/providers/GameSettingsProvider";
 import { useEffect } from "react";
 import returnTextResult from "@/utils/returnTextResult";
+import { useUIContext } from "@/providers/UIProvider";
 
 export default function Score({}) {
     const {score, gameState, isgameOver} = useGameContext();
     const {playMode, difficulty} = useGameSettingsContext();
+    const {walkthroughPhase} = useUIContext();
     useEffect(() => {
         console.log(score.lives)
     }, [score.lives])
@@ -24,15 +26,28 @@ export default function Score({}) {
     return (
         <div className=" w-fit text-(--text-color) theme-transition text-4xl font-bold flex flex-col gap-6">
             {
-                playMode!=="infinite" && gameState!=='stopped' &&
+                (
+                    (playMode!=="infinite" && gameState!=='stopped')
+                    ||
+                    walkthroughPhase!=='$$OVER$$'
+                )
+                &&
                 <>
                     <div className="flex flex-row gap-10 font-(family-name:--header-font) tracking-widest text-[40px] relative">
                         <span>Targets hit : {score.targetsHit}</span>
                         <span>Targets missed : {score.targetsMissed}</span>
                         <span>Bombs hit : {score.bombsHit}</span>
                         {
-                            isgameOver &&
-                            <div className="absolute left-[102%] w-[4%] min-h-full flex-center">
+                            (
+                                isgameOver 
+                                ||
+                                (walkthroughPhase!=='$$OVER$$')
+                            )
+                            &&
+                            <div className="absolute left-[102%] w-[4%] min-h-full flex-center" id="share-score"
+                            style={{
+                                zIndex: walkthroughPhase==='share_score' ? 10 : 'unset'
+                            }}>
                                 <button className="w-full cursor-pointer" onClick={shareScore}>
                                     <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <g strokeLinecap="round" strokeLinejoin="round"></g>

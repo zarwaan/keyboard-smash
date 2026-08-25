@@ -22,18 +22,24 @@ export default function WalkThroughToolTip() {
 
     const [position, setPosition] = useState<Position | null>(null);
 
-    const configs: Record<typeof walkthroughPhase, phaseDetails> = {
+    const configs: Partial<Record<typeof walkthroughPhase, phaseDetails>> = {
         settings: {
             elemId: "#settings-icon",
             label: 'You can adjust gameplay (difficulty, \n mode, sounds etc) in settings',
             from: 'right',
-            next: '$$OVER$$'
+            next: 'share_score'
         },
         instructions: {
             elemId: "#instructions-icon",
             label: 'Welcome! \n Click here to learn how to play',
             from: 'right',
             next: 'settings'
+        },
+        share_score: {
+            elemId: "#share-score",
+            label: "Share your score \nwith your friends!",
+            from: 'right',
+            next: '$$OVER$$'
         },
         "$$OVER$$": {} as phaseDetails
     };

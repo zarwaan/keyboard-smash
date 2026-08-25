@@ -3,7 +3,7 @@ import usePersistentState from "@/hooks/usePersistentState";
 import { createContext, useContext, useEffect, useState } from "react"
 
 type theme = 'light' | 'dark';
-type WalkthroughPhaseType = 'settings' | 'instructions' | '$$OVER$$'
+type WalkthroughPhaseType = 'settings' | 'instructions' | 'share_score' | '$$OVER$$'
 
 export interface UIState {
     isSettingsOpen : boolean,
