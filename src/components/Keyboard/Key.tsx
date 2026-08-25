@@ -1,9 +1,10 @@
 import { useGameContext } from "@/providers/GameProvider";
 import type { keyType } from "@/types/keyType";
+import { useEffect, useRef } from "react";
+
 import dig from '@/assets/images/diglett.webm';
 import bomb from '@/assets/images/bomb.webm';
 import hammer from '@/assets/images/hammer.webm';
-import { useEffect, useRef } from "react";
 import hitEff from '@/assets/images/hit.webm';
 import explosion from '@/assets/images/explosion.webm';
 
@@ -43,21 +44,6 @@ export default function Key({ keyOptions }: { keyOptions: keyType }) {
     return (
         <div className={`p-0.5 flex ${keyOptions.disabled ? "cursor-not-allowed" : "cursor-pointer"} `} style={widthStyle}>
             <button className={`border-[0.5px] border-black rounded-md flex-center shadow-2xl theme-transition w-full cursor-[inherit] relative
-                ${
-                    isHitTarget(keyOptions.label) && !keyOptions.disabled ? 
-                    "" : ""
-                    // bg-green-600
-                }
-                ${
-                    isBomb(keyOptions.label) && !keyOptions.disabled ? 
-                    "" : ""
-                    // bg-red-600
-                }
-                ${
-                    isPressed(keyOptions.label) && !keyOptions.disabled ? 
-                    "" : ""
-                    // bg-yellow-600 duration-0
-                }
                 ${
                     keyOptions.disabled ?
                     "bg-(--key-bg-color-disabled) text-(--key-text-color-disabled)" :
@@ -101,7 +87,7 @@ export default function Key({ keyOptions }: { keyOptions: keyType }) {
                                 }
                             }}    
                         >
-                            <source src={hammer} type="video/webm" />
+                            <source src={hammer} />
                             Your browser does not support the video tag.
                         </video>
                     }
