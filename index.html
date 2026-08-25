@@ -3,9 +3,19 @@
 
 <head>
 	<script>
-		const theme = window.matchMedia('(prefers-color-scheme: dark)').matches
-			? 'dark'
-			: 'light';
+		const stored = localStorage.getItem("keyboard-smash-settings");
+		let parsed;
+		if(stored) 
+        	parsed = JSON.parse(stored); 
+
+		let theme;
+		if(parsed?.currentTheme)
+			theme = parsed.currentTheme
+		else
+			theme = window.matchMedia('(prefers-color-scheme: dark)').matches
+				? 'dark'
+				: 'light';
+
 		document.documentElement.setAttribute('data-theme', theme);
 	</script>
 	<meta charset="UTF-8" />

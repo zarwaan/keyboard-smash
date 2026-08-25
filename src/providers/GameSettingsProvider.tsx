@@ -1,3 +1,5 @@
+import useEffectLog from "@/hooks/useEffectLog";
+import usePersistentState from "@/hooks/usePersistentState";
 import { createContext, useContext, useState } from "react";
 
 export interface GameSettings {
@@ -9,19 +11,16 @@ export interface GameSettings {
     setDifficulty : (_ : GameSettings['difficulty']) => void
 }
 
-const GameSettingsContext = createContext<GameSettings>({
-    includeSpecialKeys: true,
-    playMode: "lives",
-    difficulty: "easy",
-    setIncludeSpecialKeys: () => {},
-    setPlayMode: () => {},
-    setDifficulty: () => {}
-})
+const GameSettingsContext = createContext<GameSettings>({} as GameSettings)
 
 export default function GameSettingsProvider({children} : {children: React.ReactNode}) {
     const [includeSpecialKeys, setIncludeSpecialKeys] = useState(true);
-    const [playMode, setPlayMode] = useState<GameSettings['playMode']>("lives");
-    const [difficulty, setDifficulty] = useState<GameSettings['difficulty']>("easy");
+    
+    const [playMode, setPlayMode] = usePersistentState<GameSettings['playMode']>("playMode","lives");
+    const [difficulty, setDifficulty] = usePersistentState<GameSettings['difficulty']>("difficulty","easy");
+    
+    useEffectLog(playMode);
+    useEffectLog(difficulty);
 
     return (
         <GameSettingsContext.Provider value={{

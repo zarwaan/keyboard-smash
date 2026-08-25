@@ -3,7 +3,7 @@ import { animate } from "motion";
 import { motion, useMotionValue } from "motion/react";
 
 export default function SettingsIcon() {
-    const {openSettings} = useUIContext();
+    const {openSettings, walkthroughPhase} = useUIContext();
     const r = useMotionValue(0);
 
     const handleMouseEnter = () => {
@@ -17,8 +17,11 @@ export default function SettingsIcon() {
     const handleMouseLeave = () => r.stop();
 
     return (
-        <button className="border border-(--text-color) bg-indigo-500 p-1 rounded-xl shadow-[3px_3px_0px_var(--text-color)] transform-translate duration-100 ease-in-out
+        <button id="settings-icon" className="border border-(--text-color) bg-indigo-500 p-1 rounded-xl shadow-[3px_3px_0px_var(--text-color)] transform-translate duration-100 ease-in-out
                             active:translate-0.5 active:shadow-none cursor-pointer w-12" 
+                style={{
+                    zIndex: walkthroughPhase==='settings' ? 10 : 'unset'
+                }}
                 onClick={openSettings} 
                 onMouseEnter={handleMouseEnter}
                 onMouseLeave={handleMouseLeave}

@@ -32,7 +32,7 @@ export default function SettingsBox() {
         <AnimatePresence>
         {    
             isSettingsOpen && 
-            <motion.div className="border-0.5 absolute left-1/2 -translate-x-1/2 -top-20 w-1/2 m-auto text-(--text-color) border bg-(--bg-color) rounded-xl z-10 flex flex-col p-4 theme-transition gap-1"
+            <motion.div className="border-0.5 absolute left-1/2 -translate-x-1/2 -top-20 w-1/2 m-auto text-(--text-color) border bg-(--bg-color) rounded-xl z-12 flex flex-col p-4 theme-transition gap-1"
                 initial={{opacity: 0, y: 0}}
                 animate={{opacity: 1, y: "120px"}}
                 exit={{opacity: 0, y:0}}

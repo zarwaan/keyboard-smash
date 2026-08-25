@@ -1,9 +1,26 @@
 import { useState } from 'react';
+import usePersistentState, { type UserSettingKey } from './usePersistentState';
 
-export default function useBooleanState(initialValue: boolean = false): [
+export default function useBooleanState(
+    initialValue: boolean = false, 
+    persistOptions: {
+        persist: boolean,
+        persistKey: UserSettingKey | undefined
+    } = {
+        persist: false,
+        persistKey: undefined
+    }
+) : 
+[
     boolean, () => void, () => void
-] {
-    const [value, setValue] = useState<boolean>(initialValue);
+] 
+{
+
+    const [value, setValue] = 
+    persistOptions.persist && persistOptions.persistKey ?
+    usePersistentState<boolean>(persistOptions.persistKey, initialValue)
+    :
+    useState<boolean>(initialValue)
 
     const setTrue = () => setValue(true)
     const setFalse = () => setValue(false)

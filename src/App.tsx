@@ -7,6 +7,8 @@ import { useUIContext } from './providers/UIProvider'
 import { useEffect } from 'react'
 import { AnimatePresence } from 'motion/react'
 import { Analytics } from '@vercel/analytics/react'
+import WalkThroughToolTip from './components/Utils/WalkThroughToolTip'
+import Toast from './components/Utils/Toast'
 
 function App() {
 	useEffect(() => {
@@ -28,7 +30,17 @@ function AppContent() {
 		<>
 			<ContentLayout />
 			<AnimatePresence>
-				{(uictx.isSettingsOpen || uictx.isInstructionOpen) && <BackgroundBlur />}
+				{(uictx.isSettingsOpen || uictx.isInstructionOpen || uictx.walkthroughPhase!=='$$OVER$$') && <BackgroundBlur />}
+			</AnimatePresence>
+			<AnimatePresence>
+				{uictx.walkthroughPhase!=='$$OVER$$' && <WalkThroughToolTip />}
+			</AnimatePresence>
+			<AnimatePresence>
+				{
+					uictx.toast.type!=='$$NONE$$' 
+					&&
+					<Toast />
+				}
 			</AnimatePresence>
 		</>
 	)

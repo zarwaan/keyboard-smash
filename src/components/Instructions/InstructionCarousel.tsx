@@ -4,7 +4,7 @@ import InstructionTemplate from "./InstructionTemplate";
 import { useUIContext } from "@/providers/UIProvider";
 
 const INSTRUCTIONS = [
-    <InstructionTemplate title={`1. Hit the targets! (-1 \u00A0❤️\u00A0 if you miss)`} imgName="target"/>,
+    <InstructionTemplate title={`1. Smash the targets using your keyboard! (-1 \u00A0❤️\u00A0 if you miss)`} imgName="target"/>,
     <InstructionTemplate title={"2. Watch out for bombs! (-2 \u00A0❤️\u00A0 if you hit)"} imgName="bomb"/>,
     <InstructionTemplate title="3. Keep an eye on the scoreboard!" imgName="score"/>,
     <InstructionTemplate title="4. Don't run out of lives!" imgName="game-over"/>,

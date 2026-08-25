@@ -1,9 +1,16 @@
 import useBooleanState from "@/hooks/useBooleanState";
-import { createContext, useContext, useState } from "react"
+import usePersistentState from "@/hooks/usePersistentState";
+import { createContext, useContext, useEffect, useState } from "react"
 
 type theme = 'light' | 'dark';
+type WalkthroughPhaseType = 'settings' | 'instructions' | 'share_score' | '$$OVER$$'
 
-interface UIState {
+export interface ToastInterface {
+    type : 'SUCCESS' | '$$NONE$$',
+    label: string
+}
+
+export interface UIState {
     isSettingsOpen : boolean,
     openSettings : () => void,
     closeSettings : () => void,
@@ -22,38 +29,46 @@ interface UIState {
 
     areEffectsMuted : boolean,
     muteEffects : () => void,
-    unmuteEffects : () => void
+    unmuteEffects : () => void,
+
+    isFirstTime: boolean,
+    walkthroughPhase: WalkthroughPhaseType,
+    setWalkthroughPhase: (_: WalkthroughPhaseType) => void
+
+    toast: ToastInterface,
+    createToast: (_: ToastInterface) => void 
 }
 
-const UIContext = createContext<UIState>({
-    isSettingsOpen: false,
-    openSettings : () => {},
-    closeSettings: () => {},
-
-    isInstructionOpen : false,
-    openInstruction : () => {},
-    closeInstruction : () => {},
-
-    currentTheme : window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light',
-    setLightTheme: () => {},
-    setDarkTheme: () => {},
-
-    isMusicMuted : false,
-    muteMusic : () => {},
-    unmuteMusic : () => {},
-
-    areEffectsMuted : false,
-    muteEffects : () => {},
-    unmuteEffects : () => {},
-})
+const UIContext = createContext<UIState>({} as UIState)
 
 export default function UIProvider({children} : {children: React.ReactNode}) {
     const [ isSettingsOpen, openSettings, closeSettings ] = useBooleanState(false);
     const [isInstructionOpen, openInstruction, closeInstruction] = useBooleanState(false);
+    const [isFirstTime, setIsFirstTime] = usePersistentState<boolean>('isFirstTime', true);
+    const [walkthroughPhase, setWalkthroughPhase] = useState<WalkthroughPhaseType>(isFirstTime ? 'instructions' : '$$OVER$$');
+    const [toast, setToast] = useState<ToastInterface>({
+        type: '$$NONE$$',
+        label: ""
+    });
+    const createToast = (toast: ToastInterface) => {
+        setToast(toast);
+        setTimeout(() => {
+            setToast(prev => ({
+                ...prev,
+                type: '$$NONE$$',
+            }))
+        },5000)
+    }
 
-    const [currentTheme, setCurrentTheme] = useState<theme>(
-        document.documentElement.getAttribute('data-theme') as theme
+    useEffect(() => {
+        if(walkthroughPhase==='$$OVER$$') 
+            setIsFirstTime(false)
+    },[walkthroughPhase])
+
+    const [currentTheme, setCurrentTheme] = usePersistentState<theme>(
+       "currentTheme", document.documentElement.getAttribute('data-theme') as theme
     );
+
     const setLightTheme = () => {
         setCurrentTheme('light');
         document.documentElement.setAttribute('data-theme', 'light')
@@ -63,8 +78,15 @@ export default function UIProvider({children} : {children: React.ReactNode}) {
         document.documentElement.setAttribute('data-theme', 'dark')
     }
 
-    const [isMusicMuted, muteMusic, unmuteMusic] = useBooleanState(false);
-    const [areEffectsMuted, muteEffects, unmuteEffects] = useBooleanState(false);
+    const [isMusicMuted, muteMusic, unmuteMusic] = useBooleanState(false, {
+        persist: true,
+        persistKey: 'isMusicMuted'
+    });
+
+    const [areEffectsMuted, muteEffects, unmuteEffects] = useBooleanState(false, {
+        persist: true,
+        persistKey: 'areEffectsMuted'
+    });
 
     return (
         <UIContext.Provider value={{
@@ -72,7 +94,9 @@ export default function UIProvider({children} : {children: React.ReactNode}) {
             isInstructionOpen, openInstruction, closeInstruction,
             currentTheme, setLightTheme, setDarkTheme,
             isMusicMuted, muteMusic, unmuteMusic,
-            areEffectsMuted, muteEffects, unmuteEffects
+            areEffectsMuted, muteEffects, unmuteEffects,
+            isFirstTime, setWalkthroughPhase, walkthroughPhase,
+            toast, createToast
         }}>
             {children}
         </UIContext.Provider>

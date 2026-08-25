@@ -9,15 +9,7 @@ interface GameAudios {
     gameOverEffect: AudioController
 }
 
-const initController = {} as AudioController;
-
-const GameAudiosContext = createContext<GameAudios>({
-    bgMusic: initController,
-    hitEffect: initController,
-    missEffect: initController,
-    bombEffect: initController,
-    gameOverEffect: initController
-})
+const GameAudiosContext = createContext<GameAudios>({} as GameAudios);
 
 export default function SoundProvider({children} : {children: React.ReactNode}) {
     const bgMusic = useAudioPool("bg");
