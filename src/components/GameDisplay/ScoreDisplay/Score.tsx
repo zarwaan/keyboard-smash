@@ -8,7 +8,7 @@ import { useUIContext } from "@/providers/UIProvider";
 export default function Score({}) {
     const {score, gameState, isgameOver} = useGameContext();
     const {playMode, difficulty} = useGameSettingsContext();
-    const {walkthroughPhase} = useUIContext();
+    const {walkthroughPhase, createToast} = useUIContext();
     useEffect(() => {
         console.log(score.lives)
     }, [score.lives])
@@ -16,7 +16,11 @@ export default function Score({}) {
     const shareScore = async () => {
         try{
             const [success, _] = await returnTextResult(score, difficulty);
-            if(success) console.log('Copied Successfully')
+            if(success)
+                createToast({
+                    type: 'SUCCESS',
+                    label: 'Copied to clipboard!'
+                })
         }
         catch (err){
             console.error(err);

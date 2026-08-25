@@ -11,11 +11,12 @@ async function copyToClipboard(text: string) {
     }
 }
 
-export default async function returnTextResult(score: Score, difficulty: string) {
+export default async function returnTextResult(score: Score, difficulty: string) : Promise<[boolean, string]> {
     const {targetsHit, targetsMissed, bombsHit} = score;
     const total = targetsHit+targetsMissed+bombsHit;
 
-    if(total===0) return [true, ''];
+    if(total===0) 
+        return [true, ''];
 
     const createRandomEmojiSequence = () => {
         const EmojiSequence: Array<'🎯'|'❌'|'💣'> = 

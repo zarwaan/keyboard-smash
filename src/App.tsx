@@ -8,6 +8,7 @@ import { useEffect } from 'react'
 import { AnimatePresence } from 'motion/react'
 import { Analytics } from '@vercel/analytics/react'
 import WalkThroughToolTip from './components/Utils/WalkThroughToolTip'
+import Toast from './components/Utils/Toast'
 
 function App() {
 	useEffect(() => {
@@ -33,6 +34,13 @@ function AppContent() {
 			</AnimatePresence>
 			<AnimatePresence>
 				{uictx.walkthroughPhase!=='$$OVER$$' && <WalkThroughToolTip />}
+			</AnimatePresence>
+			<AnimatePresence>
+				{
+					uictx.toast.type!=='$$NONE$$' 
+					&&
+					<Toast />
+				}
 			</AnimatePresence>
 		</>
 	)

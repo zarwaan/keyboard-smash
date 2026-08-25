@@ -5,6 +5,11 @@ import { createContext, useContext, useEffect, useState } from "react"
 type theme = 'light' | 'dark';
 type WalkthroughPhaseType = 'settings' | 'instructions' | 'share_score' | '$$OVER$$'
 
+export interface ToastInterface {
+    type : 'SUCCESS' | '$$NONE$$',
+    label: string
+}
+
 export interface UIState {
     isSettingsOpen : boolean,
     openSettings : () => void,
@@ -29,6 +34,9 @@ export interface UIState {
     isFirstTime: boolean,
     walkthroughPhase: WalkthroughPhaseType,
     setWalkthroughPhase: (_: WalkthroughPhaseType) => void
+
+    toast: ToastInterface,
+    createToast: (_: ToastInterface) => void 
 }
 
 const UIContext = createContext<UIState>({} as UIState)
@@ -38,6 +46,19 @@ export default function UIProvider({children} : {children: React.ReactNode}) {
     const [isInstructionOpen, openInstruction, closeInstruction] = useBooleanState(false);
     const [isFirstTime, setIsFirstTime] = usePersistentState<boolean>('isFirstTime', true);
     const [walkthroughPhase, setWalkthroughPhase] = useState<WalkthroughPhaseType>(isFirstTime ? 'instructions' : '$$OVER$$');
+    const [toast, setToast] = useState<ToastInterface>({
+        type: '$$NONE$$',
+        label: ""
+    });
+    const createToast = (toast: ToastInterface) => {
+        setToast(toast);
+        setTimeout(() => {
+            setToast(prev => ({
+                ...prev,
+                type: '$$NONE$$',
+            }))
+        },5000)
+    }
 
     useEffect(() => {
         if(walkthroughPhase==='$$OVER$$') 
@@ -74,7 +95,8 @@ export default function UIProvider({children} : {children: React.ReactNode}) {
             currentTheme, setLightTheme, setDarkTheme,
             isMusicMuted, muteMusic, unmuteMusic,
             areEffectsMuted, muteEffects, unmuteEffects,
-            isFirstTime, setWalkthroughPhase, walkthroughPhase
+            isFirstTime, setWalkthroughPhase, walkthroughPhase,
+            toast, createToast
         }}>
             {children}
         </UIContext.Provider>
