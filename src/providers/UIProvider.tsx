@@ -3,7 +3,14 @@ import usePersistentState from "@/hooks/usePersistentState";
 import { createContext, useContext, useEffect, useState } from "react"
 
 type theme = 'light' | 'dark';
-type WalkthroughPhaseType = 'settings' | 'instructions' | 'share_score' | '$$OVER$$'
+type WalkthroughPhaseType = 'settings' | 
+                            'instructions' | 
+                            'hit_target_v3' |
+                            'bomb_u' |
+                            'score_display' |
+                            'lives' |
+                            'share_score' | 
+                            '$$OVER$$'
 
 export interface ToastInterface {
     type : 'SUCCESS' | '$$NONE$$',
@@ -46,6 +53,7 @@ export default function UIProvider({children} : {children: React.ReactNode}) {
     const [isInstructionOpen, openInstruction, closeInstruction] = useBooleanState(false);
     const [isFirstTime, setIsFirstTime] = usePersistentState<boolean>('isFirstTime', true);
     const [walkthroughPhase, setWalkthroughPhase] = useState<WalkthroughPhaseType>(isFirstTime ? 'instructions' : '$$OVER$$');
+
     const [toast, setToast] = useState<ToastInterface>({
         type: '$$NONE$$',
         label: ""

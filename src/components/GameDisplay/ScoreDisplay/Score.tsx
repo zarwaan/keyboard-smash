@@ -14,6 +14,7 @@ export default function Score({}) {
     }, [score.lives])
 
     const shareScore = async () => {
+        if(walkthroughPhase==='share_score') return;
         try{
             const [success, _] = await returnTextResult(score, difficulty, gameEventSequence);
             if(success)
@@ -37,7 +38,11 @@ export default function Score({}) {
                 )
                 &&
                 <>
-                    <div className="flex flex-row gap-10 font-(family-name:--header-font) tracking-widest text-[40px] relative">
+                    <div className="flex flex-row gap-10 font-(family-name:--header-font) tracking-widest text-[40px] relative" id="score-display"
+                    style={{
+                            zIndex: walkthroughPhase==='score_display' ? 10 : 'unset'
+                        }}
+                    >
                         <span>Targets hit : {score.targetsHit}</span>
                         <span>Targets missed : {score.targetsMissed}</span>
                         <span>Bombs hit : {score.bombsHit}</span>

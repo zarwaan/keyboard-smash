@@ -7,15 +7,21 @@ import bomb from '@/assets/images/bomb.webm';
 import hammer from '@/assets/images/hammer.webm';
 import hitEff from '@/assets/images/hit.webm';
 import explosion from '@/assets/images/explosion.webm';
+import { useUIContext } from "@/providers/UIProvider";
 
 export default function Key({ keyOptions }: { keyOptions: keyType }) {
     const widthStyle = keyOptions.length ? { width: keyOptions.length } : {flexGrow : 1};
     const {isPressed, isHitTarget, isBomb, hitEvent} = useGameContext();
+    const {walkthroughPhase} = useUIContext();
 
     const hit = keyOptions.disabled ? undefined : hitEvent(keyOptions.label)
     const keyPress = isPressed(keyOptions.label) && !keyOptions.disabled;
 
     const videoSrc = 
+    (walkthroughPhase==='hit_target_v3' && (keyOptions.label.toLowerCase() === 'v' || keyOptions.label === '3')) ? dig
+    :
+    (walkthroughPhase==='bomb_u' && (keyOptions.label.toLowerCase() === 'u')) ? bomb
+    :
     isHitTarget(keyOptions.label) && !keyOptions.disabled ? dig 
     :
     isBomb(keyOptions.label) && !keyOptions.disabled ? bomb 
@@ -41,9 +47,25 @@ export default function Key({ keyOptions }: { keyOptions: keyType }) {
         }
     },[keyPress]);
 
+    const zIndex = () => {
+        return (
+            (walkthroughPhase==='hit_target_v3' && (keyOptions.label.toLowerCase() === 'v' || keyOptions.label === '3')) 
+            ||
+            (walkthroughPhase==='bomb_u' && (keyOptions.label.toLowerCase() === 'u')) 
+            ?
+            10
+            :
+            'unset'
+        )
+    }
+
     return (
-        <div className={`p-0.5 flex ${keyOptions.disabled ? "cursor-not-allowed" : "cursor-pointer"} `} style={widthStyle}>
-            <button className={`border-[0.5px] border-black rounded-md flex-center shadow-2xl theme-transition w-full cursor-[inherit] relative
+        <div className={`p-0.5 flex ${keyOptions.disabled ? "cursor-not-allowed" : "cursor-pointer"} `} style={{
+                ...widthStyle,
+                zIndex: zIndex(),
+            }}>
+            <button id={"key-"+keyOptions.label.toLowerCase()}
+            className={`border-[0.5px] border-black rounded-md flex-center shadow-2xl theme-transition w-full cursor-[inherit] relative
                 ${
                     keyOptions.disabled ?
                     "bg-(--key-bg-color-disabled) text-(--key-text-color-disabled)" :

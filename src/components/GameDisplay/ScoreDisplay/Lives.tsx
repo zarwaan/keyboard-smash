@@ -2,12 +2,18 @@ import heartPng from "@/assets/images/lives.png"
 import { AnimatePresence, motion } from "motion/react";
 import { useGameContext } from "@/providers/GameProvider";
 import GameOverBox from "./GameOverBox";
+import { useUIContext } from "@/providers/UIProvider";
 
 export default function Lives({}) {
     const {score, gameId, isgameOver} = useGameContext();
+    const {walkthroughPhase} = useUIContext();
     return (
         <div className="w-full p-1 flex flex-row gap-4 flex-center">
-            <span className="flex flex-row gap-2">
+            <span className="flex flex-row gap-2" id="lives-display"
+                style={{
+                    zIndex: walkthroughPhase==='lives' ? 10 : 'unset'
+                }}
+            >
                 {
                     !isgameOver
                     &&

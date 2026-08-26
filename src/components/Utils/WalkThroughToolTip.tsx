@@ -3,9 +3,9 @@ import { useUIContext } from "@/providers/UIProvider";
 import { motion } from "motion/react";
 
 interface Position {
-    top: number | 'unset';
-    left: number | 'unset';
-    right: number | 'unset';
+    top: number | '';
+    left: number | '';
+    right: number | '';
 }
 
 export default function WalkThroughToolTip() {
@@ -22,12 +22,12 @@ export default function WalkThroughToolTip() {
 
     const [position, setPosition] = useState<Position | null>(null);
 
-    const configs: Partial<Record<typeof walkthroughPhase, phaseDetails>> = {
+    const configs: Record<typeof walkthroughPhase, phaseDetails> = {
         settings: {
             elemId: "#settings-icon",
-            label: 'You can adjust gameplay (difficulty, \n mode, sounds etc) in settings',
+            label: 'You can adjust gameplay (difficulty, mode, sounds etc) in settings',
             from: 'right',
-            next: 'share_score'
+            next: 'hit_target_v3'
         },
         instructions: {
             elemId: "#instructions-icon",
@@ -37,9 +37,33 @@ export default function WalkThroughToolTip() {
         },
         share_score: {
             elemId: "#share-score",
-            label: "Share your score \nwith your friends!",
+            label: "Share your score with your friends!",
             from: 'right',
             next: '$$OVER$$'
+        },
+        lives: {
+            elemId: "#lives-display",
+            label: "Keep an eye on your lives!",
+            from: 'right',
+            next: 'share_score'
+        },
+        score_display: {
+            elemId: "#score-display",
+            label: "See your score here!",
+            from: 'left',
+            next: 'lives'
+        },
+        hit_target_v3: {
+            elemId: "#key-e",
+            label: "Smash the targets with your keyboard!",
+            from: 'right',
+            next: 'bomb_u'
+        },
+        bomb_u : {
+            elemId: "#key-u",
+            label: "Watch out for bombs!",
+            from: 'right',
+            next: 'score_display'
         },
         "$$OVER$$": {} as phaseDetails
     };
@@ -64,9 +88,10 @@ export default function WalkThroughToolTip() {
 
         setPosition({
             top: dims.y + dims.height + 20,
-            left: config.from==='left' ? dims.x : 'unset',
-            right: config.from==='right' ? document.documentElement.getBoundingClientRect().width - (dims.x + dims.width) : 'unset'
+            left: config.from==='left' ? dims.x : '',
+            right: config.from==='right' ? document.documentElement.getBoundingClientRect().width - (dims.x + dims.width) : ''
         });
+
     }, [config])
 
     if (!position) return null;
@@ -75,8 +100,8 @@ export default function WalkThroughToolTip() {
 
     return (
         <motion.div
-            className="fixed z-10 bg-indigo-500 py-2 px-4 rounded-xl transition-transform duration-300 flex flex-col 
-            flex-center text-(--full-white) gap-2"
+            className="absolute z-10 bg-indigo-500 py-2 px-4 rounded-xl transition-transform duration-300 flex flex-col 
+            flex-center text-(--full-white) gap-2 w-55 "
             style={{
                 top: position.top,
                 left: position.left,
@@ -90,8 +115,9 @@ export default function WalkThroughToolTip() {
                 right: position.right,
             }}
             transition={{
-                duration: 0.5,
-                ease: "easeInOut"
+                ease: "linear",
+                type: "spring",
+                damping: 15,
             }}
             exit={{ opacity: 0 }}
         >
