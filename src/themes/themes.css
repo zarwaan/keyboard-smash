@@ -3,14 +3,14 @@
     --full-white: #ffffff;
     --light-bg-color: var(--color-indigo-50);
     --dark-bg-color: rgb(2, 0, 21);
-
-     
 }
 
 :root[data-theme="light"] {
     /* General page colors */
     --bg-color : var(--color-indigo-50);
     --text-color: var(--color-black);
+
+    --page-bg: linear-gradient(160deg, rgb(238, 238, 255) 0%, rgb(213, 214, 255) 2%, rgb(205, 205, 255) 100%);
 
     /* Inverted */
     --bg-color-inverted: rgb(2, 0, 21);
@@ -28,6 +28,8 @@
     /* General page colors */
     --bg-color : rgb(2, 0, 21);
     --text-color: var(--color-white);
+
+    --page-bg : linear-gradient(160deg, rgba(2, 0, 21, 1) 0%, rgb(3, 0, 33) 2%, rgb(2, 0, 43) 100%);
 
     /* Inverted */
     --bg-color-inverted: var(--color-indigo-50);

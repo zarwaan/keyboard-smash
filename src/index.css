@@ -4,6 +4,12 @@
   @apply transition-colors duration-300 ;
 }
 
+html {
+    min-height: 100vh;
+    background: var(--page-bg);
+	background-color: var(--bg-color);
+}
+
 :root {
 	--theme-transition-duration: 3000ms;
 	--header-font: 'StonePunk', sans-serif;

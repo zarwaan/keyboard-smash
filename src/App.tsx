@@ -13,7 +13,8 @@ import Toast from './components/Utils/Toast'
 function App() {
 	useEffect(() => {
 		document.body.classList.add('theme-transition');
-	});
+		document.documentElement.classList.add('theme-transition');
+	},[]);
 	return (
 		<>
 			<Analytics />
