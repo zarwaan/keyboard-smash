@@ -4,7 +4,7 @@ import { useGameSettingsContext } from "./GameSettingsProvider";
 import { difficulties } from "@/configs/difficulties.config";
 import { useSoundContext } from "./SoundProvider";
 import { useKeyboardInput } from "@/hooks/useKeyboardInput";
-import { gameReducer, initialGameState, type Target, type HitEvent, type Score, type GameReducerState } from "@/state/GameReducer";
+import { gameReducer, initialGameState, type Target, type HitEvent, type Score, type GameReducerState, type GameEvent } from "@/state/GameReducer";
 
 interface GameState {
     gameId: number;
@@ -23,6 +23,7 @@ interface GameState {
     pauseGame: () => void;
     resumeGame: () => void;
     score: Score;
+    gameEventSequence: GameEvent[];
 }
 
 const GameContext = createContext<GameState>({} as GameState)
@@ -154,6 +155,7 @@ export default function GameProvider({ children }: { children: React.ReactNode }
                 pauseGame,
                 resumeGame,
                 score: state.score,
+                gameEventSequence: state.gameEventSequence
             }}
         >
             {children}

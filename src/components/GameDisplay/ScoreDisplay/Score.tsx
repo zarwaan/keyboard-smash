@@ -6,7 +6,7 @@ import returnTextResult from "@/utils/returnTextResult";
 import { useUIContext } from "@/providers/UIProvider";
 
 export default function Score({}) {
-    const {score, gameState, isgameOver} = useGameContext();
+    const {score, gameState, isgameOver, gameEventSequence} = useGameContext();
     const {playMode, difficulty} = useGameSettingsContext();
     const {walkthroughPhase, createToast} = useUIContext();
     useEffect(() => {
@@ -15,7 +15,7 @@ export default function Score({}) {
 
     const shareScore = async () => {
         try{
-            const [success, _] = await returnTextResult(score, difficulty);
+            const [success, _] = await returnTextResult(score, difficulty, gameEventSequence);
             if(success)
                 createToast({
                     type: 'SUCCESS',

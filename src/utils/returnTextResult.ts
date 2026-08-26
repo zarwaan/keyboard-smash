@@ -1,4 +1,4 @@
-import type { Score } from "@/state/GameReducer";
+import type { GameEvent, Score } from "@/state/GameReducer";
 
 async function copyToClipboard(text: string) {
     try{
@@ -11,24 +11,25 @@ async function copyToClipboard(text: string) {
     }
 }
 
-export default async function returnTextResult(score: Score, difficulty: string) : Promise<[boolean, string]> {
+export default async function returnTextResult(score: Score, difficulty: string, gameEventSequence: GameEvent[]) : Promise<[boolean, string]> {
     const {targetsHit, targetsMissed, bombsHit} = score;
     const total = targetsHit+targetsMissed+bombsHit;
 
     if(total===0) 
         return [true, ''];
 
-    const createRandomEmojiSequence = () => {
-        const EmojiSequence: Array<'🎯'|'❌'|'💣'> = 
-        new Array(total)
-            .fill('💣')
-            .fill('🎯',0,targetsHit)
-            .fill('❌',targetsHit,targetsHit+targetsMissed);
-
-        return [...EmojiSequence].sort(() => Math.random() - 0.5)
+    const createEmojiSequence = () => {
+        const seq : Array<'🎯'|'❌'|'💣'> = gameEventSequence.map(e => {
+            switch(e){
+                case "BOMB_EVENT": return '💣';
+                case "HIT_EVENT": return '🎯';
+                case "MISS_EVENT": return '❌';
+            }
+        })
+        return seq;
     }
 
-    const emojiGrid = createRandomEmojiSequence()
+    const emojiGrid = createEmojiSequence()
                         .reduce((result, emoji, i) => {
                             return result + emoji + ((i + 1) % 5 === 0 && i!==total-1 ? '\n' : '');
                         }, '');

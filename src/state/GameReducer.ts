@@ -19,10 +19,13 @@ export interface Score {
     lives: number;
 }
 
+export type GameEvent = "HIT_EVENT" | "MISS_EVENT" | "BOMB_EVENT"
+
 export interface GameReducerState {
     gameId: number;
     targetKeys: Target[];
     hitEvents: HitEvent[];
+    gameEventSequence: GameEvent[]; 
     score: Score;
     gameState: "ongoing" | "stopped";
     isPaused: boolean;
@@ -35,6 +38,7 @@ export const initialGameState: GameReducerState = {
     gameId: 0,
     targetKeys: [],
     hitEvents: [],
+    gameEventSequence: [],
     score: INITIAL_SCORE,
     gameState: "stopped",
     isPaused: false,
@@ -97,10 +101,13 @@ export function gameReducer(state: GameReducerState, action: GameAction): GameRe
                 ? applyLivesDelta({ ...state.score, bombsHit: state.score.bombsHit + 1 }, 2, action.infiniteLives)
                 : { ...state.score, targetsHit: state.score.targetsHit + 1 };
 
+            const gameEvent : GameEvent = target.isBomb ? "BOMB_EVENT" : "HIT_EVENT";
+
             return {
                 ...state,
                 targetKeys: state.targetKeys.filter(t => t.key !== target.key),
                 hitEvents: [...state.hitEvents, hitEvent],
+                gameEventSequence: [...state.gameEventSequence, gameEvent],
                 score,
                 isGameOver: score.lives <= 0,
             };
@@ -120,10 +127,13 @@ export function gameReducer(state: GameReducerState, action: GameAction): GameRe
                       )
                     : state.score;
 
+            const missEvents : GameEvent[] = Array<GameEvent>(missedCount).fill("MISS_EVENT");
+
             return {
                 ...state,
                 targetKeys: state.targetKeys.filter(t => t.expiresAt > action.now),
                 score,
+                gameEventSequence: [...state.gameEventSequence, ...missEvents],
                 isGameOver: score.lives <= 0,
             };
         }
