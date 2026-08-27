@@ -32,7 +32,7 @@ export default function Score({}) {
         <div className=" w-fit text-(--text-color) theme-transition text-4xl font-bold flex flex-col gap-6">
             {
                 (
-                    (playMode!=="infinite" && gameState!=='stopped')
+                    (gameState!=='stopped')
                     ||
                     walkthroughPhase!=='$$OVER$$'
                 )
@@ -68,7 +68,10 @@ export default function Score({}) {
                             </div>
                         }
                     </div>
-                    <Lives key={'new'}/>
+                    {
+                        playMode!=="infinite" && 
+                        <Lives key={'new'}/>
+                    }
                 </>
             }
         </div>
