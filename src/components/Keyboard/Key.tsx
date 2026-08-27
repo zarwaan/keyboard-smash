@@ -11,7 +11,7 @@ import { useUIContext } from "@/providers/UIProvider";
 
 export default function Key({ keyOptions }: { keyOptions: keyType }) {
     const widthStyle = keyOptions.length ? { width: keyOptions.length } : {flexGrow : 1};
-    const {isPressed, isHitTarget, isBomb, hitEvent} = useGameContext();
+    const {isPressed, getTargetType, hitEvent} = useGameContext();
     const {walkthroughPhase} = useUIContext();
 
     const hit = keyOptions.disabled ? undefined : hitEvent(keyOptions.label)
@@ -22,9 +22,9 @@ export default function Key({ keyOptions }: { keyOptions: keyType }) {
     :
     (walkthroughPhase==='bomb_u' && (keyOptions.label.toLowerCase() === 'u')) ? bomb
     :
-    isHitTarget(keyOptions.label) && !keyOptions.disabled ? dig 
+    getTargetType(keyOptions.label)==='target' && !keyOptions.disabled ? dig 
     :
-    isBomb(keyOptions.label) && !keyOptions.disabled ? bomb 
+    getTargetType(keyOptions.label)==='bomb' && !keyOptions.disabled ? bomb 
     : 
     null;
 

@@ -1,14 +1,22 @@
+export const POSSIBLE_TARGET_TYPES = [
+    "target",
+    "bomb",
+] as const
+
+export type TargetType = (typeof POSSIBLE_TARGET_TYPES)[number]
 
 export interface Target {
     key: string;
     expiresAt: number;
-    isBomb: boolean;
+    // isBomb: boolean;
+    type: TargetType;
+
 }
 
 export interface HitEvent {
     id: string;
     key: string;
-    type: "target" | "bomb";
+    type: TargetType
     expiresAt: number;
 }
 
@@ -19,7 +27,8 @@ export interface Score {
     lives: number;
 }
 
-export type GameEvent = "HIT_EVENT" | "MISS_EVENT" | "BOMB_EVENT"
+export type GameEvent = "HIT_EVENT" | "MISS_EVENT" | "BOMB_EVENT" 
+// | "SHIELD_EVENT" | "EXTRA_LIFE_EVENT"
 
 export interface GameReducerState {
     gameId: number;
@@ -93,15 +102,21 @@ export function gameReducer(state: GameReducerState, action: GameAction): GameRe
             const hitEvent: HitEvent = {
                 id: crypto.randomUUID(),
                 key: target.key,
-                type: target.isBomb ? "bomb" : "target",
+                type: target.type,
                 expiresAt: action.now + 500,
             };
 
-            const score = target.isBomb
+            const score = target.type === "bomb"
                 ? applyLivesDelta({ ...state.score, bombsHit: state.score.bombsHit + 1 }, 2, action.infiniteLives)
                 : { ...state.score, targetsHit: state.score.targetsHit + 1 };
 
-            const gameEvent : GameEvent = target.isBomb ? "BOMB_EVENT" : "HIT_EVENT";
+            const gameEvent : GameEvent = (() : GameEvent => {
+                switch(target.type)
+                {
+                    case 'bomb': return "BOMB_EVENT";
+                    case 'target': return "HIT_EVENT";
+                }
+            })();
 
             return {
                 ...state,
@@ -117,7 +132,7 @@ export function gameReducer(state: GameReducerState, action: GameAction): GameRe
             const expired = state.targetKeys.filter(t => t.expiresAt <= action.now);
             if (expired.length === 0) return state;
 
-            const missedCount = expired.filter(t => !t.isBomb).length;
+            const missedCount = expired.filter(t => t.type==="target").length;
             const score =
                 missedCount > 0
                     ? applyLivesDelta(

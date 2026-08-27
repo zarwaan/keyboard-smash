@@ -4,15 +4,16 @@ import { useGameSettingsContext } from "./GameSettingsProvider";
 import { difficulties } from "@/configs/difficulties.config";
 import { useSoundContext } from "./SoundProvider";
 import { useKeyboardInput } from "@/hooks/useKeyboardInput";
-import { gameReducer, initialGameState, type Target, type HitEvent, type Score, type GameReducerState, type GameEvent } from "@/state/GameReducer";
+import { gameReducer, initialGameState, type Target, type HitEvent, type Score, type GameReducerState, type GameEvent, type TargetType, POSSIBLE_TARGET_TYPES } from "@/state/GameReducer";
 
 interface GameState {
     gameId: number;
     pressedKeys: Set<string>;
     isPressed: (keyValue: string) => boolean;
     targetKeys: Target[];
-    isHitTarget: (keyValue: string) => boolean;
-    isBomb: (keyValue: string) => boolean;
+    // isHitTarget: (keyValue: string) => boolean;
+    // isBomb: (keyValue: string) => boolean;
+    getTargetType: (keyValue: string) => TargetType | undefined;
     hitEvents: HitEvent[];
     hitEvent: (keyValue: string) => HitEvent | undefined;
     gameState: GameReducerState['gameState'];
@@ -42,6 +43,23 @@ export default function GameProvider({ children }: { children: React.ReactNode }
     const { bombEffect, hitEffect, missEffect, bgMusic, gameOverEffect } = useSoundContext();
     const { targetInterval, timeActive, bombProbability } = difficulties[difficulty];
 
+    const PROBABILITIES : Record<TargetType,number> = {
+        bomb: bombProbability,
+        // more later
+        target: 0
+    };
+    PROBABILITIES['target'] = 1 - Object.values(PROBABILITIES).reduce((acc,curr) => acc+curr,0);
+
+    function getRandomTargetType(): TargetType {
+        const random = Math.random();
+        let cumulativeProbability = 0;
+
+        return POSSIBLE_TARGET_TYPES.find(type => {
+            cumulativeProbability += PROBABILITIES[type];
+            return random < cumulativeProbability;
+        })!;
+    }
+
     const [state, dispatch] = useReducer(gameReducer, initialGameState);
     const { pressedKeys, isPressed } = useKeyboardInput(!state.isPaused);
 
@@ -57,10 +75,12 @@ export default function GameProvider({ children }: { children: React.ReactNode }
 
     const isInfiniteLives = () => playModeRef.current === "infinite";
 
-    const isHitTarget = (keyValue: string) =>
-        state.targetKeys.some(t => t.key.toLowerCase() === keyValue.toLowerCase() && !t.isBomb);
-    const isBomb = (keyValue: string) =>
-        state.targetKeys.some(t => t.key.toLowerCase() === keyValue.toLowerCase() && t.isBomb);
+    // const isHitTarget = (keyValue: string) =>
+    //     state.targetKeys.some(t => t.key.toLowerCase() === keyValue.toLowerCase() && !t.isBomb);
+    // const isBomb = (keyValue: string) =>
+    //     state.targetKeys.some(t => t.key.toLowerCase() === keyValue.toLowerCase() && t.isBomb);
+    const getTargetType : GameState['getTargetType'] = (keyValue: string) => 
+        state.targetKeys.find(t => t.key.toLowerCase() === keyValue.toLowerCase())?.type;
     const hitEvent = (keyValue: string) =>
         state.hitEvents.find(e => e.key.toLowerCase() === keyValue.toLowerCase());
     const pausedAtRef = useRef(0);
@@ -91,7 +111,16 @@ export default function GameProvider({ children }: { children: React.ReactNode }
         if (!target) return;
 
         dispatch({ type: "HIT_TARGET", key: target.key, now: Date.now(), infiniteLives: isInfiniteLives() });
-        (target.isBomb ? bombEffect : hitEffect).play();
+
+        (() => {
+            switch(target.type){
+                case "bomb": return bombEffect;
+                case "target": return hitEffect;
+            }
+        })().play();
+
+        // soundEffect.play();
+        
     }, [pressedKeys]);
 
     useEffect(() => {
@@ -103,11 +132,16 @@ export default function GameProvider({ children }: { children: React.ReactNode }
             if (!key) return;
             dispatch({
                 type: "ADD_TARGET",
-                target: { key, expiresAt: Date.now() + timeActive, isBomb: Math.random() < bombProbability },
+                target: { 
+                    key, 
+                    expiresAt: Date.now() + timeActive, 
+                    type: getRandomTargetType()
+                },
             });
         };
 
         spawn();
+        
         const id = window.setInterval(() => {
             if (!stateRef.current.isPaused) spawn();
         }, targetInterval);
@@ -120,7 +154,7 @@ export default function GameProvider({ children }: { children: React.ReactNode }
             if (stateRef.current.isPaused) return;
             const now = Date.now();
 
-            const missed = stateRef.current.targetKeys.filter(t => t.expiresAt <= now && !t.isBomb).length;
+            const missed = stateRef.current.targetKeys.filter(t => t.expiresAt <= now && t.type==="target").length;
             if (missed > 0) missEffect.play();
 
             dispatch({ type: "EXPIRE_TARGETS", now, infiniteLives: isInfiniteLives() });
@@ -143,8 +177,7 @@ export default function GameProvider({ children }: { children: React.ReactNode }
                 pressedKeys,
                 isPressed,
                 targetKeys: state.targetKeys,
-                isHitTarget,
-                isBomb,
+                getTargetType,
                 hitEvents: state.hitEvents,
                 hitEvent,
                 gameState: state.gameState,
