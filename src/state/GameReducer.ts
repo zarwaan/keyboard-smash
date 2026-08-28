@@ -1,6 +1,9 @@
 export const POSSIBLE_TARGET_TYPES = [
     "target",
     "bomb",
+    "shield",
+    "life",
+    // "fire-all"
 ] as const
 
 export type TargetType = (typeof POSSIBLE_TARGET_TYPES)[number]
@@ -27,8 +30,7 @@ export interface Score {
     lives: number;
 }
 
-export type GameEvent = "HIT_EVENT" | "MISS_EVENT" | "BOMB_EVENT" 
-// | "SHIELD_EVENT" | "EXTRA_LIFE_EVENT"
+export type GameEvent = "HIT_EVENT" | "MISS_EVENT" | "BOMB_EVENT" | "SHIELD_EVENT" | "EXTRA_LIFE_EVENT"
 
 export interface GameReducerState {
     gameId: number;
@@ -65,7 +67,7 @@ export type GameAction =
     | { type: "CLEANUP_HIT_EVENTS"; now: number };
 
 function applyLivesDelta(score: Score, delta: number, infiniteLives: boolean): Score {
-    return { ...score, lives: infiniteLives ? score.lives : score.lives - delta };
+    return { ...score, lives: infiniteLives ? score.lives : score.lives + delta };
 }
 
 export function gameReducer(state: GameReducerState, action: GameAction): GameReducerState {
@@ -106,8 +108,11 @@ export function gameReducer(state: GameReducerState, action: GameAction): GameRe
                 expiresAt: action.now + 500,
             };
 
-            const score = target.type === "bomb"
-                ? applyLivesDelta({ ...state.score, bombsHit: state.score.bombsHit + 1 }, 2, action.infiniteLives)
+            const score = 
+                target.type === "bomb" ?
+                    applyLivesDelta({ ...state.score, bombsHit: state.score.bombsHit + 1 }, -2, action.infiniteLives)
+                : target.type === "life" && state.score.lives < 7 ?
+                    applyLivesDelta({...state.score}, 1 ,action.infiniteLives)
                 : { ...state.score, targetsHit: state.score.targetsHit + 1 };
 
             const gameEvent : GameEvent = (() : GameEvent => {
@@ -115,6 +120,8 @@ export function gameReducer(state: GameReducerState, action: GameAction): GameRe
                 {
                     case 'bomb': return "BOMB_EVENT";
                     case 'target': return "HIT_EVENT";
+                    case 'life': return "EXTRA_LIFE_EVENT";
+                    case 'shield': return "SHIELD_EVENT";
                 }
             })();
 

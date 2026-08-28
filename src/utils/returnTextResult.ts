@@ -19,11 +19,13 @@ export default async function returnTextResult(score: Score, difficulty: string,
         return [true, ''];
 
     const createEmojiSequence = () => {
-        const seq : Array<'🎯'|'❌'|'💣'> = gameEventSequence.map(e => {
+        const seq : Array<'🎯'|'❌'|'💣'|'🛡️'|'❤️'> = gameEventSequence.map(e => {
             switch(e){
                 case "BOMB_EVENT": return '💣';
                 case "HIT_EVENT": return '🎯';
                 case "MISS_EVENT": return '❌';
+                case "SHIELD_EVENT": return '🛡️';
+                case "EXTRA_LIFE_EVENT": return '❤️';
             }
         })
         return seq;

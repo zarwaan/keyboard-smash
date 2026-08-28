@@ -5,6 +5,7 @@ import { difficulties } from "@/configs/difficulties.config";
 import { useSoundContext } from "./SoundProvider";
 import { useKeyboardInput } from "@/hooks/useKeyboardInput";
 import { gameReducer, initialGameState, type Target, type HitEvent, type Score, type GameReducerState, type GameEvent, type TargetType, POSSIBLE_TARGET_TYPES } from "@/state/GameReducer";
+import { useUIContext } from "./UIProvider";
 
 interface GameState {
     gameId: number;
@@ -40,14 +41,19 @@ function pickRandomKey(exclude: Set<string>): string | null {
 
 export default function GameProvider({ children }: { children: React.ReactNode }) {
     const { difficulty, playMode } = useGameSettingsContext();
-    const { bombEffect, hitEffect, missEffect, bgMusic, gameOverEffect } = useSoundContext();
+    const { bombEffect, hitEffect, missEffect, bgMusic, gameOverEffect, shieldEffect, extraLifeEffect } = useSoundContext();
     const { targetInterval, timeActive, bombProbability } = difficulties[difficulty];
+    const { createToast } = useUIContext();
+
+    const POWERUP_PROBABILITY = 0.5; // IMP REMEMBER TO CHANGE
 
     const PROBABILITIES : Record<TargetType,number> = {
-        bomb: bombProbability,
-        // more later
+        bomb: 0, //bombProbability
+        shield: 0.5, //POWERUP_PROBABILITY
+        life: 0.5, //POWERUP_PROBABILITY
         target: 0
     };
+
     PROBABILITIES['target'] = 1 - Object.values(PROBABILITIES).reduce((acc,curr) => acc+curr,0);
 
     function getRandomTargetType(): TargetType {
@@ -116,10 +122,13 @@ export default function GameProvider({ children }: { children: React.ReactNode }
             switch(target.type){
                 case "bomb": return bombEffect;
                 case "target": return hitEffect;
+                case "life": return extraLifeEffect;
+                case "shield": return shieldEffect;
             }
         })().play();
 
-        // soundEffect.play();
+        if(target.type==="shield") 
+            createToast({ type: "INFO", label: "Shield Activated!" })
         
     }, [pressedKeys]);
 

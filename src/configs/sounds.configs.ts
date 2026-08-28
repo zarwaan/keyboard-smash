@@ -3,6 +3,8 @@ import bgMusic from "@/assets/audio/music/bgmusic2.mp3"
 import missEffect from "@/assets/audio/effects/miss2.mp3"
 import bombEffect from "@/assets/audio/effects/bomb2.mp3"
 import gameover from "@/assets/audio/effects/gameover.mp3"
+import life from "@/assets/audio/effects/life.mp3"
+import shield from "@/assets/audio/effects/shield.mp3"
 
 export interface AudioTrackInterface {
     src: string,
@@ -40,6 +42,18 @@ export const AUDIO_TRACKS = {
         src: gameover,
         volume: 1,
         poolSize: 1,
+        audioType: "Effect"
+    },
+    'extra_life': {
+        src: life,
+        volume: 1,
+        poolSize: 5,
+        audioType: "Effect"
+    },
+    'shield': {
+        src: shield,
+        volume: 1,
+        poolSize: 5,
         audioType: "Effect"
     }
 } satisfies Record<string, AudioTrackInterface>

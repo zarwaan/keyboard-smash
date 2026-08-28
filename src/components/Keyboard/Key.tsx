@@ -5,6 +5,7 @@ import HammerAnimation from "../Animations/HammerAnimation";
 import type { TargetType } from "@/state/GameReducer";
 import TargetAnimation from "../Animations/TargetAnimation";
 import EffectAnimation from "../Animations/EffectAnimation";
+import { motion } from "motion/react";
 
 export default function Key({ keyOptions }: { keyOptions: keyType }) {
     const widthStyle = keyOptions.length ? { width: keyOptions.length } : {flexGrow : 1};
@@ -14,19 +15,29 @@ export default function Key({ keyOptions }: { keyOptions: keyType }) {
     const hit = keyOptions.disabled ? undefined : hitEvent(keyOptions.label)
     const keyPress = isPressed(keyOptions.label) && !keyOptions.disabled;
 
+    const isTarget = (t: TargetType) => getTargetType(keyOptions.label)===t && !keyOptions.disabled
+
     const targetAnim : TargetType | null =
     (
         (walkthroughPhase==='hit_target_v3' && (keyOptions.label.toLowerCase() === 'v' || keyOptions.label === '3'))
         ||
-        (getTargetType(keyOptions.label)==='target' && !keyOptions.disabled)
+        isTarget('target')
     ) 
     ? 'target' :
     (
         (walkthroughPhase==='bomb_u' && (keyOptions.label.toLowerCase() === 'u'))
         ||
-        (getTargetType(keyOptions.label)==='bomb' && !keyOptions.disabled)
+        isTarget('bomb')
     )
     ? 'bomb' : 
+    (
+        isTarget('shield')
+    )
+    ? 'shield' :
+    (
+        isTarget('life')
+    )
+    ? 'life' :
     null
 
     const effectAnim : TargetType | null = hit ? hit.type : null;
@@ -48,14 +59,28 @@ export default function Key({ keyOptions }: { keyOptions: keyType }) {
                 ...widthStyle,
                 zIndex: zIndex(),
             }}>
-            <button id={"key-"+keyOptions.label.toLowerCase()}
-            className={`border-[0.5px] border-black rounded-md flex-center shadow-2xl theme-transition w-full cursor-[inherit] relative
+            <motion.button id={"key-"+keyOptions.label.toLowerCase()}
+            className={`border-[0.5px] border-black rounded-md shadow-2xl flex-center theme-transition w-full cursor-[inherit] relative
+                
                 ${
                     keyOptions.disabled ?
                     "bg-(--key-bg-color-disabled) text-(--key-text-color-disabled)" :
                     "bg-(--key-color) text-(--key-text-color)"
                 }
-                `} >
+                `} 
+            // initial={{
+            //     boxShadow: "inset 0px 0px 2px 2px var(--color-blue-500)"
+            // }}
+            // animate={{
+            //     boxShadow: "inset 0px 0px 5px 2px var(--color-blue-500)"
+            // }}
+            // transition={{
+            //     duration: 0.5,
+            //     repeat: Infinity,
+            //     repeatType: "mirror",
+            //     ease: "easeInOut"
+            // }}
+                >
                 {
                     keyOptions.label === "space" ? "" :
                     keyOptions.label === "Blank" ? "⏻" :
@@ -67,7 +92,7 @@ export default function Key({ keyOptions }: { keyOptions: keyType }) {
                         { effectAnim && <EffectAnimation type={effectAnim} /> }
                     </div>
                     <HammerAnimation keyPress={keyPress}/>
-            </button>
+            </motion.button>
         </div>
     )
 }

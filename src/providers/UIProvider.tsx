@@ -13,7 +13,7 @@ type WalkthroughPhaseType = 'settings' |
                             '$$OVER$$'
 
 export interface ToastInterface {
-    type : 'SUCCESS' | '$$NONE$$',
+    type : 'SUCCESS' | '$$NONE$$' | 'INFO'
     label: string
 }
 
