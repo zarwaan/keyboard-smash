@@ -6,14 +6,18 @@ export const POSSIBLE_TARGET_TYPES = [
     // "fire-all"
 ] as const
 
+export const NON_POWERUP_TYPES = [
+    "target",
+    "bomb"
+] as const
+
 export type TargetType = (typeof POSSIBLE_TARGET_TYPES)[number]
+export type PowerUpType = Exclude<TargetType, (typeof NON_POWERUP_TYPES)[number]>
 
 export interface Target {
     key: string;
     expiresAt: number;
-    // isBomb: boolean;
     type: TargetType;
-
 }
 
 export interface HitEvent {
@@ -30,6 +34,11 @@ export interface Score {
     lives: number;
 }
 
+export interface PowerUpProperties {
+    active: boolean, 
+    expiresAt: number | null
+}
+
 export type GameEvent = "HIT_EVENT" | "MISS_EVENT" | "BOMB_EVENT" | "SHIELD_EVENT" | "EXTRA_LIFE_EVENT"
 
 export interface GameReducerState {
@@ -41,9 +50,11 @@ export interface GameReducerState {
     gameState: "ongoing" | "stopped";
     isPaused: boolean;
     isGameOver: boolean;
+    powerUps: Record<PowerUpType,PowerUpProperties>
 }
 
 const INITIAL_SCORE: Score = { targetsHit: 0, targetsMissed: 0, bombsHit: 0, lives: 7 };
+const POWERUP_ACTIVE_FOR = 10000;
 
 export const initialGameState: GameReducerState = {
     gameId: 0,
@@ -54,6 +65,16 @@ export const initialGameState: GameReducerState = {
     gameState: "stopped",
     isPaused: false,
     isGameOver: false,
+    powerUps: {
+        shield: {
+            active: false,
+            expiresAt : null
+        },
+        life: {
+            active: false,
+            expiresAt: null
+        }
+    }
 };
 
 export type GameAction =
@@ -64,10 +85,28 @@ export type GameAction =
     | { type: "ADD_TARGET"; target: Target }
     | { type: "HIT_TARGET"; key: string; now: number; infiniteLives: boolean }
     | { type: "EXPIRE_TARGETS"; now: number; infiniteLives: boolean }
-    | { type: "CLEANUP_HIT_EVENTS"; now: number };
+    | { type: "CLEANUP_HIT_EVENTS"; now: number }
+    | { type: "DEACTIVATE_POWERUPS"; now: number}
 
 function applyLivesDelta(score: Score, delta: number, infiniteLives: boolean): Score {
     return { ...score, lives: infiniteLives ? score.lives : score.lives + delta };
+}
+
+function isPowerUp(t: TargetType){
+    return !(NON_POWERUP_TYPES.includes(t as never))
+}
+
+function activatePowerUp(prevPowerUps: GameReducerState['powerUps'], powerUpName: PowerUpType, now: number) : GameReducerState['powerUps'] {
+    if(powerUpName==="life") return prevPowerUps;
+
+    const remaining = Math.max(0, (prevPowerUps[powerUpName].expiresAt ?? now) - now);
+
+    prevPowerUps[powerUpName] = {
+        active: true,
+        expiresAt: now + remaining + POWERUP_ACTIVE_FOR
+    }
+    
+    return prevPowerUps
 }
 
 export function gameReducer(state: GameReducerState, action: GameAction): GameReducerState {
@@ -82,6 +121,17 @@ export function gameReducer(state: GameReducerState, action: GameAction): GameRe
             return state.gameState === "ongoing" ? { ...state, isPaused: true } : state;
 
         case "RESUME_GAME":
+            const powerUps = { ...state.powerUps };
+            (Object.entries(state.powerUps) as [PowerUpType, PowerUpProperties][])
+                .forEach(([k,v]) => {
+                    if(v.expiresAt !== null){
+                        powerUps[k] = {
+                            ...v,
+                            expiresAt: v.expiresAt + action.pausedDuration
+                        }
+                    }
+                })
+
             return {
                 ...state,
                 isPaused: false,
@@ -89,6 +139,7 @@ export function gameReducer(state: GameReducerState, action: GameAction): GameRe
                     ...t,
                     expiresAt: t.expiresAt + action.pausedDuration,
                 })),
+                powerUps
             };
 
         case "ADD_TARGET": {
@@ -99,6 +150,7 @@ export function gameReducer(state: GameReducerState, action: GameAction): GameRe
 
         case "HIT_TARGET": {
             const target = state.targetKeys.find(t => t.key.toLowerCase() === action.key.toLowerCase());
+            const shieldUp = state.powerUps.shield.active;
             if (!target) return state;
 
             const hitEvent: HitEvent = {
@@ -109,33 +161,44 @@ export function gameReducer(state: GameReducerState, action: GameAction): GameRe
             };
 
             const score = 
-                target.type === "bomb" ?
+                target.type === "bomb" && !shieldUp ?
                     applyLivesDelta({ ...state.score, bombsHit: state.score.bombsHit + 1 }, -2, action.infiniteLives)
+                : target.type === "bomb" && shieldUp ?
+                    {...state.score }
                 : target.type === "life" && state.score.lives < 7 ?
                     applyLivesDelta({...state.score}, 1 ,action.infiniteLives)
                 : { ...state.score, targetsHit: state.score.targetsHit + 1 };
 
-            const gameEvent : GameEvent = (() : GameEvent => {
+            const gameEvent : GameEvent | undefined = (() : GameEvent | undefined => {
                 switch(target.type)
                 {
-                    case 'bomb': return "BOMB_EVENT";
+                    case 'bomb': if(!shieldUp) return "BOMB_EVENT"; break;
                     case 'target': return "HIT_EVENT";
                     case 'life': return "EXTRA_LIFE_EVENT";
                     case 'shield': return "SHIELD_EVENT";
                 }
             })();
 
+            if(isPowerUp(target.type)) 
+                state['powerUps'] = activatePowerUp(state['powerUps'], target.type as never, action.now);
+
             return {
                 ...state,
                 targetKeys: state.targetKeys.filter(t => t.key !== target.key),
                 hitEvents: [...state.hitEvents, hitEvent],
-                gameEventSequence: [...state.gameEventSequence, gameEvent],
+                gameEventSequence: gameEvent ? [...state.gameEventSequence, gameEvent] : [...state.gameEventSequence],
                 score,
                 isGameOver: score.lives <= 0,
             };
         }
 
         case "EXPIRE_TARGETS": {
+            if(state.powerUps.shield.active)
+                return {
+                    ...state,
+                    targetKeys: state.targetKeys.filter(t => t.expiresAt > action.now)
+                }
+        
             const expired = state.targetKeys.filter(t => t.expiresAt <= action.now);
             if (expired.length === 0) return state;
 
@@ -162,6 +225,24 @@ export function gameReducer(state: GameReducerState, action: GameAction): GameRe
 
         case "CLEANUP_HIT_EVENTS":
             return { ...state, hitEvents: state.hitEvents.filter(e => e.expiresAt > action.now) };
+
+        case "DEACTIVATE_POWERUPS": {
+            const powerUps = { ...state.powerUps };
+            (Object.entries(state.powerUps) as [PowerUpType, PowerUpProperties][])
+            .forEach(([k,v]) => {
+                if(v.expiresAt && v.expiresAt <= action.now){
+                    powerUps[k] = {
+                        active: false,
+                        expiresAt: null
+                    }
+                }
+            })
+
+            return {
+                ...state,
+                powerUps
+            }
+        }
 
         default:
             return state;

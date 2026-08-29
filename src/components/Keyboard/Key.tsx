@@ -9,8 +9,10 @@ import { motion } from "motion/react";
 
 export default function Key({ keyOptions }: { keyOptions: keyType }) {
     const widthStyle = keyOptions.length ? { width: keyOptions.length } : {flexGrow : 1};
-    const {isPressed, getTargetType, hitEvent} = useGameContext();
+    const {isPressed, getTargetType, hitEvent, powerUps} = useGameContext();
     const {walkthroughPhase} = useUIContext();
+
+    const shieldUp = powerUps.shield.active;
 
     const hit = keyOptions.disabled ? undefined : hitEvent(keyOptions.label)
     const keyPress = isPressed(keyOptions.label) && !keyOptions.disabled;
@@ -64,22 +66,23 @@ export default function Key({ keyOptions }: { keyOptions: keyType }) {
                 
                 ${
                     keyOptions.disabled ?
-                    "bg-(--key-bg-color-disabled) text-(--key-text-color-disabled)" :
+                    "bg-(--key-bg-color-disabled) text-(--key-text-color-disabled) shadow-2xl! border-[0.5px]!" :
                     "bg-(--key-color) text-(--key-text-color)"
                 }
                 `} 
-            // initial={{
-            //     boxShadow: "inset 0px 0px 2px 2px var(--color-blue-500)"
-            // }}
-            // animate={{
-            //     boxShadow: "inset 0px 0px 5px 2px var(--color-blue-500)"
-            // }}
-            // transition={{
-            //     duration: 0.5,
-            //     repeat: Infinity,
-            //     repeatType: "mirror",
-            //     ease: "easeInOut"
-            // }}
+                initial={{
+                    boxShadow: shieldUp ? "inset 0px 0px 2px 2px var(--color-sky-600)" : 'initial',
+                    borderWidth: shieldUp ? "0px" : '0.5px'
+                }}
+                animate={{
+                    boxShadow: shieldUp ? "inset 0px 0px 5px 2px var(--color-sky-600)" : "initial"
+                }}
+                transition={{
+                    duration: 0.5,
+                    repeat: Infinity,
+                    repeatType: "mirror",
+                    ease: "easeInOut"
+                }}
                 >
                 {
                     keyOptions.label === "space" ? "" :

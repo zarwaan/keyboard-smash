@@ -12,8 +12,6 @@ interface GameState {
     pressedKeys: Set<string>;
     isPressed: (keyValue: string) => boolean;
     targetKeys: Target[];
-    // isHitTarget: (keyValue: string) => boolean;
-    // isBomb: (keyValue: string) => boolean;
     getTargetType: (keyValue: string) => TargetType | undefined;
     hitEvents: HitEvent[];
     hitEvent: (keyValue: string) => HitEvent | undefined;
@@ -26,6 +24,7 @@ interface GameState {
     resumeGame: () => void;
     score: Score;
     gameEventSequence: GameEvent[];
+    powerUps: GameReducerState['powerUps']
 }
 
 const GameContext = createContext<GameState>({} as GameState)
@@ -45,15 +44,14 @@ export default function GameProvider({ children }: { children: React.ReactNode }
     const { targetInterval, timeActive, bombProbability } = difficulties[difficulty];
     const { createToast } = useUIContext();
 
-    const POWERUP_PROBABILITY = 0.5; // IMP REMEMBER TO CHANGE
+    const POWERUP_PROBABILITY = 0.07; // IMP REMEMBER TO CHANGE
 
     const PROBABILITIES : Record<TargetType,number> = {
-        bomb: 0, //bombProbability
-        shield: 0.5, //POWERUP_PROBABILITY
-        life: 0.5, //POWERUP_PROBABILITY
+        bomb: bombProbability,
+        shield: POWERUP_PROBABILITY,
+        life: POWERUP_PROBABILITY,
         target: 0
     };
-
     PROBABILITIES['target'] = 1 - Object.values(PROBABILITIES).reduce((acc,curr) => acc+curr,0);
 
     function getRandomTargetType(): TargetType {
@@ -81,10 +79,6 @@ export default function GameProvider({ children }: { children: React.ReactNode }
 
     const isInfiniteLives = () => playModeRef.current === "infinite";
 
-    // const isHitTarget = (keyValue: string) =>
-    //     state.targetKeys.some(t => t.key.toLowerCase() === keyValue.toLowerCase() && !t.isBomb);
-    // const isBomb = (keyValue: string) =>
-    //     state.targetKeys.some(t => t.key.toLowerCase() === keyValue.toLowerCase() && t.isBomb);
     const getTargetType : GameState['getTargetType'] = (keyValue: string) => 
         state.targetKeys.find(t => t.key.toLowerCase() === keyValue.toLowerCase())?.type;
     const hitEvent = (keyValue: string) =>
@@ -163,11 +157,14 @@ export default function GameProvider({ children }: { children: React.ReactNode }
             if (stateRef.current.isPaused) return;
             const now = Date.now();
 
-            const missed = stateRef.current.targetKeys.filter(t => t.expiresAt <= now && t.type==="target").length;
-            if (missed > 0) missEffect.play();
+            if(!stateRef.current.powerUps.shield.active) {
+                const missed = stateRef.current.targetKeys.filter(t => t.expiresAt <= now && t.type==="target").length;
+                if (missed > 0) missEffect.play();
+            }
 
             dispatch({ type: "EXPIRE_TARGETS", now, infiniteLives: isInfiniteLives() });
             dispatch({ type: "CLEANUP_HIT_EVENTS", now });
+            dispatch({ type: "DEACTIVATE_POWERUPS", now})
         }, 100);
 
         return () => window.clearInterval(id);
@@ -197,7 +194,8 @@ export default function GameProvider({ children }: { children: React.ReactNode }
                 pauseGame,
                 resumeGame,
                 score: state.score,
-                gameEventSequence: state.gameEventSequence
+                gameEventSequence: state.gameEventSequence,
+                powerUps: state.powerUps
             }}
         >
             {children}
