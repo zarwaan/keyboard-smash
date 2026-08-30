@@ -48,7 +48,7 @@ export default function GameProvider({ children }: { children: React.ReactNode }
 
     const PROBABILITIES : Record<TargetType,number> = {
         bomb: bombProbability,
-        shield: POWERUP_PROBABILITY,
+        shield: 0.8,
         life: POWERUP_PROBABILITY,
         target: 0
     };
