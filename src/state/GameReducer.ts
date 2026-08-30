@@ -99,14 +99,16 @@ function isPowerUp(t: TargetType){
 function activatePowerUp(prevPowerUps: GameReducerState['powerUps'], powerUpName: PowerUpType, now: number) : GameReducerState['powerUps'] {
     if(powerUpName==="life") return prevPowerUps;
 
-    const remaining = Math.max(0, (prevPowerUps[powerUpName].expiresAt ?? now) - now);
+    const powerUps = { ...prevPowerUps }
 
-    prevPowerUps[powerUpName] = {
+    const remaining = Math.max(0, (powerUps[powerUpName].expiresAt ?? now) - now);
+
+    powerUps[powerUpName] = {
         active: true,
         expiresAt: now + remaining + POWERUP_ACTIVE_FOR
     }
     
-    return prevPowerUps
+    return powerUps
 }
 
 export function gameReducer(state: GameReducerState, action: GameAction): GameReducerState {
@@ -115,7 +117,7 @@ export function gameReducer(state: GameReducerState, action: GameAction): GameRe
             return { ...initialGameState, gameId: state.gameId + 1, gameState: "ongoing" };
 
         case "STOP_GAME":
-            return { ...state, gameState: "stopped", isPaused: false, targetKeys: [], score: INITIAL_SCORE };
+            return { ...state, gameState: "stopped", isPaused: false, targetKeys: [], score: INITIAL_SCORE, powerUps: initialGameState['powerUps'] };
 
         case "PAUSE_GAME":
             return state.gameState === "ongoing" ? { ...state, isPaused: true } : state;
@@ -164,7 +166,7 @@ export function gameReducer(state: GameReducerState, action: GameAction): GameRe
                 target.type === "bomb" && !shieldUp ?
                     applyLivesDelta({ ...state.score, bombsHit: state.score.bombsHit + 1 }, -2, action.infiniteLives)
                 : target.type === "bomb" && shieldUp ?
-                    {...state.score }
+                    { ...state.score }
                 : target.type === "life" && state.score.lives < 7 ?
                     applyLivesDelta({...state.score}, 1 ,action.infiniteLives)
                 : { ...state.score, targetsHit: state.score.targetsHit + 1 };
@@ -179,11 +181,14 @@ export function gameReducer(state: GameReducerState, action: GameAction): GameRe
                 }
             })();
 
+            let powerUps = { ...state.powerUps }
+
             if(isPowerUp(target.type)) 
-                state['powerUps'] = activatePowerUp(state['powerUps'], target.type as never, action.now);
+                powerUps = activatePowerUp(state['powerUps'], target.type as never, action.now);
 
             return {
                 ...state,
+                powerUps,
                 targetKeys: state.targetKeys.filter(t => t.key !== target.key),
                 hitEvents: [...state.hitEvents, hitEvent],
                 gameEventSequence: gameEvent ? [...state.gameEventSequence, gameEvent] : [...state.gameEventSequence],
