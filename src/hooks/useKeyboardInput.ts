@@ -9,13 +9,27 @@ function getNameOfKey(e: KeyboardEvent): string {
     return e.key.toLowerCase();
 }
 
-export function useKeyboardInput(enabled: boolean) {
+export function useKeyboardInput(enabled: boolean, pressAll: boolean, allKeys: string[]) {
     const [pressedKeys, setPressedKeys] = useState<Set<string>>(new Set());
 
     const enabledRef = useRef(enabled);
     useEffect(() => {
         enabledRef.current = enabled;
     }, [enabled]);
+
+    const pressAllRef = useRef(pressAll);
+    useEffect(() => {
+        pressAllRef.current = pressAll
+    },[pressAll]);
+
+    useEffect(() => {
+        if(pressAll){
+            setPressedKeys(new Set(allKeys))
+        }
+        else {
+            setPressedKeys(new Set())
+        }
+    }, [pressAll])
 
     useEffect(() => {
         function handleKeyDown(e: KeyboardEvent) {
@@ -40,6 +54,7 @@ export function useKeyboardInput(enabled: boolean) {
 
         function handleKeyUp(e: KeyboardEvent) {
             if (!enabledRef.current) return;
+            if(pressAllRef.current) return;
             const key = getNameOfKey(e);
             if (!key) return;
 
@@ -52,6 +67,7 @@ export function useKeyboardInput(enabled: boolean) {
 
         window.addEventListener("keydown", handleKeyDown);
         window.addEventListener("keyup", handleKeyUp);
+
         return () => {
             window.removeEventListener("keydown", handleKeyDown);
             window.removeEventListener("keyup", handleKeyUp);

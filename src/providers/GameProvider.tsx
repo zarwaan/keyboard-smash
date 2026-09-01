@@ -6,6 +6,7 @@ import { useSoundContext } from "./SoundProvider";
 import { useKeyboardInput } from "@/hooks/useKeyboardInput";
 import { gameReducer, initialGameState, type Target, type HitEvent, type Score, type GameReducerState, type GameEvent, type TargetType, POSSIBLE_TARGET_TYPES } from "@/state/GameReducer";
 import { useUIContext } from "./UIProvider";
+// import type { AudioController } from "@/hooks/useAudioPool";
 
 interface GameState {
     gameId: number;
@@ -40,17 +41,18 @@ function pickRandomKey(exclude: Set<string>): string | null {
 
 export default function GameProvider({ children }: { children: React.ReactNode }) {
     const { difficulty, playMode } = useGameSettingsContext();
-    const { bombEffect, hitEffect, missEffect, bgMusic, gameOverEffect, shieldEffect, extraLifeEffect } = useSoundContext();
+    const { bombEffect, hitEffect, missEffect, bgMusic, gameOverEffect, shieldEffect, extraLifeEffect, fireAllEffect } = useSoundContext();
     const { targetInterval, timeActive, bombProbability } = difficulties[difficulty];
     const { createToast } = useUIContext();
 
-    const POWERUP_PROBABILITY = 0.07; // IMP REMEMBER TO CHANGE
+    const POWERUP_PROBABILITY = 0.03; // IMP REMEMBER TO CHANGE
 
     const PROBABILITIES : Record<TargetType,number> = {
         bomb: bombProbability,
-        shield: 0.8,
+        shield: POWERUP_PROBABILITY,
         life: POWERUP_PROBABILITY,
-        target: 0
+        fireAll: POWERUP_PROBABILITY,
+        target: 0,
     };
     PROBABILITIES['target'] = 1 - Object.values(PROBABILITIES).reduce((acc,curr) => acc+curr,0);
 
@@ -65,7 +67,7 @@ export default function GameProvider({ children }: { children: React.ReactNode }
     }
 
     const [state, dispatch] = useReducer(gameReducer, initialGameState);
-    const { pressedKeys, isPressed } = useKeyboardInput(!state.isPaused);
+    const { pressedKeys, isPressed } = useKeyboardInput(!state.isPaused, state.powerUps.fireAll.active, ALL_KEYS);
 
     const stateRef = useRef(state);
     useEffect(() => {
@@ -118,13 +120,14 @@ export default function GameProvider({ children }: { children: React.ReactNode }
                 case "target": return hitEffect;
                 case "life": return extraLifeEffect;
                 case "shield": return shieldEffect;
+                case "fireAll": return fireAllEffect;
             }
         })().play();
 
         if(target.type==="shield") 
             createToast({ type: "INFO", label: "Shield Activated!" })
         
-    }, [pressedKeys]);
+    }, [pressedKeys, state.targetKeys]);
 
     useEffect(() => {
         if (state.gameState !== "ongoing") return;
@@ -144,6 +147,14 @@ export default function GameProvider({ children }: { children: React.ReactNode }
         };
 
         spawn();
+        // dispatch({
+        //     type: "ADD_TARGET",
+        //     target: { 
+        //         key : 'e', 
+        //         expiresAt: Date.now() + timeActive, 
+        //         type: "fireAll"
+        //     },
+        // })
         
         const id = window.setInterval(() => {
             if (!stateRef.current.isPaused) spawn();

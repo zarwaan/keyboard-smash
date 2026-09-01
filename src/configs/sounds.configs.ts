@@ -5,6 +5,7 @@ import bombEffect from "@/assets/audio/effects/bomb2.mp3"
 import gameover from "@/assets/audio/effects/gameover.mp3"
 import life from "@/assets/audio/effects/life.mp3"
 import shield from "@/assets/audio/effects/shield.mp3"
+import fireAll from "@/assets/audio/effects/thor.mp3"
 
 export interface AudioTrackInterface {
     src: string,
@@ -52,6 +53,12 @@ export const AUDIO_TRACKS = {
     },
     'shield': {
         src: shield,
+        volume: 1,
+        poolSize: 5,
+        audioType: "Effect"
+    },
+    "fireAll": {
+        src: fireAll,
         volume: 1,
         poolSize: 5,
         audioType: "Effect"

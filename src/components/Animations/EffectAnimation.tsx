@@ -4,6 +4,7 @@ import hitEff from '@/assets/images/effects/hit.webm';
 import explosion from '@/assets/images/effects/explosion.webm';
 import heartsEff from '@/assets/images/effects/heartsEff.webm';
 import energy from '@/assets/images/effects/energy_shield.webm';
+import fireAllEff from '@/assets/images/effects/fireAll.webm';
 import TemplateAnimation from "./TemplateAnimation";
 
 export default function EffectAnimation({type} : {type: TargetType}) {
@@ -25,9 +26,14 @@ export default function EffectAnimation({type} : {type: TargetType}) {
             src: energy,
             className: 'scale-120'
         },
+        fireAll: {
+            src: fireAllEff,
+            className: '',
+            speed: 0.5
+        }
     }
 
     const anim = configs[type];
 
-    return <TemplateAnimation src={anim.src} className={anim.className} />
+    return <TemplateAnimation src={anim.src} className={anim.className} speed={anim.speed}/>
 }

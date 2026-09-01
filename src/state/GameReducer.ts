@@ -3,7 +3,7 @@ export const POSSIBLE_TARGET_TYPES = [
     "bomb",
     "shield",
     "life",
-    // "fire-all"
+    "fireAll"
 ] as const
 
 export const NON_POWERUP_TYPES = [
@@ -39,7 +39,7 @@ export interface PowerUpProperties {
     expiresAt: number | null
 }
 
-export type GameEvent = "HIT_EVENT" | "MISS_EVENT" | "BOMB_EVENT" | "SHIELD_EVENT" | "EXTRA_LIFE_EVENT"
+export type GameEvent = "HIT_EVENT" | "MISS_EVENT" | "BOMB_EVENT" | "SHIELD_EVENT" | "EXTRA_LIFE_EVENT" | "FIRE_ALL_EVENT"
 
 export interface GameReducerState {
     gameId: number;
@@ -55,6 +55,7 @@ export interface GameReducerState {
 
 const INITIAL_SCORE: Score = { targetsHit: 0, targetsMissed: 0, bombsHit: 0, lives: 7 };
 const POWERUP_ACTIVE_FOR = 10000;
+const initPowerUpProperties : PowerUpProperties = { active: false, expiresAt: null}
 
 export const initialGameState: GameReducerState = {
     gameId: 0,
@@ -66,14 +67,9 @@ export const initialGameState: GameReducerState = {
     isPaused: false,
     isGameOver: false,
     powerUps: {
-        shield: {
-            active: false,
-            expiresAt : null
-        },
-        life: {
-            active: false,
-            expiresAt: null
-        }
+        shield: initPowerUpProperties,
+        life: initPowerUpProperties,
+        fireAll: initPowerUpProperties
     }
 };
 
@@ -103,9 +99,28 @@ function activatePowerUp(prevPowerUps: GameReducerState['powerUps'], powerUpName
 
     const remaining = Math.max(0, (powerUps[powerUpName].expiresAt ?? now) - now);
 
-    powerUps[powerUpName] = {
-        active: true,
-        expiresAt: now + remaining + POWERUP_ACTIVE_FOR
+    if (powerUpName === "fireAll") {
+        // FireAll activates shield only when FireAll wasn't already active
+        if (!powerUps.fireAll.active) {
+            powerUps.shield = {
+                active: true,
+                expiresAt: now + POWERUP_ACTIVE_FOR
+            };
+        }
+
+        // FireAll itself doesn't extend if already active
+        powerUps.fireAll = {
+            active: true,
+            expiresAt: powerUps.fireAll.active
+                ? powerUps.fireAll.expiresAt
+                : now + POWERUP_ACTIVE_FOR
+        };
+    } else {
+        // Normal power-up: stack remaining time
+        powerUps[powerUpName] = {
+            active: true,
+            expiresAt: now + remaining + POWERUP_ACTIVE_FOR
+        };
     }
     
     return powerUps
@@ -178,6 +193,7 @@ export function gameReducer(state: GameReducerState, action: GameAction): GameRe
                     case 'target': return "HIT_EVENT";
                     case 'life': return "EXTRA_LIFE_EVENT";
                     case 'shield': return "SHIELD_EVENT";
+                    case 'fireAll': return "FIRE_ALL_EVENT";
                 }
             })();
 
@@ -212,7 +228,7 @@ export function gameReducer(state: GameReducerState, action: GameAction): GameRe
                 missedCount > 0
                     ? applyLivesDelta(
                           { ...state.score, targetsMissed: state.score.targetsMissed + missedCount },
-                          missedCount,
+                          -missedCount,
                           action.infiniteLives
                       )
                     : state.score;

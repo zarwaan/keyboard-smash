@@ -40,6 +40,10 @@ export default function Key({ keyOptions }: { keyOptions: keyType }) {
         isTarget('life')
     )
     ? 'life' :
+    (
+        isTarget('fireAll')
+    )
+    ? 'fireAll' :
     null
 
     const effectAnim : TargetType | null = hit ? hit.type : null;

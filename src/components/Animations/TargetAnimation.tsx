@@ -3,6 +3,7 @@ import dig from '@/assets/images/targets/diglett.webm';
 import bomb from '@/assets/images/targets/bomb.webm';
 import shield from '@/assets/images/targets/shield.webm';
 import life from '@/assets/images/targets/life.webm';
+import thor from '@/assets/images/targets/thor.webm'
 import type { EffectAndTargetAnimation } from "./TemplateAnimation";
 import TemplateAnimation from "./TemplateAnimation";
 
@@ -25,6 +26,10 @@ export default function TargetAnimation({type} : {type: TargetType}) {
             src: life,
             className: 'scale-85'
         },
+        fireAll: {
+            src: thor,
+            className: 'scale-85'
+        }
     }
     
     const anim = configs[type];

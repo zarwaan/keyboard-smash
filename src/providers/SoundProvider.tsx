@@ -8,7 +8,8 @@ interface GameAudios {
     bombEffect: AudioController,
     gameOverEffect: AudioController,
     extraLifeEffect: AudioController,
-    shieldEffect: AudioController
+    shieldEffect: AudioController,
+    fireAllEffect: AudioController,
 }
 
 const GameAudiosContext = createContext<GameAudios>({} as GameAudios);
@@ -21,9 +22,10 @@ export default function SoundProvider({children} : {children: React.ReactNode}) 
     const gameOverEffect = useAudioPool("game_over");
     const extraLifeEffect = useAudioPool("extra_life");
     const shieldEffect = useAudioPool("shield");
+    const fireAllEffect = useAudioPool("fireAll");
     return (
         <GameAudiosContext.Provider value={{
-            bgMusic, hitEffect, missEffect, bombEffect, gameOverEffect, extraLifeEffect, shieldEffect
+            bgMusic, hitEffect, missEffect, bombEffect, gameOverEffect, extraLifeEffect, shieldEffect, fireAllEffect
         }}>
             {children}
         </GameAudiosContext.Provider>
