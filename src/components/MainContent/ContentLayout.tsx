@@ -5,6 +5,7 @@ import MainBody from "./MainBody";
 import GameControls from "../GameDisplay/ControlDisplay/GameControls";
 import Score from "../GameDisplay/ScoreDisplay/Score";
 import InstructionBox from "../Instructions/InstructionBox";
+import InstructionBox2 from "../Instructions/2/InstructionBox2";
 
 export default function ContentLayout() {
     return (
@@ -17,7 +18,7 @@ export default function ContentLayout() {
                 <Score />
             </MainBody>
             <SettingsBox />
-            <InstructionBox />
+            <InstructionBox2 />
         </div>
     )
 }
