@@ -3,9 +3,8 @@ import type { keyType } from "@/types/keyType";
 import { useUIContext } from "@/providers/UIProvider";
 import HammerAnimation from "../Animations/HammerAnimation";
 import type { TargetType } from "@/state/GameReducer";
-import TargetAnimation from "../Animations/TargetAnimation";
-import EffectAnimation from "../Animations/EffectAnimation";
 import { motion } from "motion/react";
+import KeyAnimation from "../Animations/KeyAnimation";
 
 export default function Key({ keyOptions }: { keyOptions: keyType }) {
     const widthStyle = keyOptions.length ? { width: keyOptions.length } : {flexGrow : 1};
@@ -104,8 +103,8 @@ export default function Key({ keyOptions }: { keyOptions: keyType }) {
                     keyOptions.label
                 }
                     <div className="borde border-red-500 aspect-square absolute max-h-full flex-center">
-                        { targetAnim && <TargetAnimation type={targetAnim} /> }
-                        { effectAnim && <EffectAnimation type={effectAnim} /> }
+                        { targetAnim && <KeyAnimation targetName={targetAnim} animationKind="targeting" /> }
+                        { effectAnim && <KeyAnimation targetName={effectAnim} animationKind="effect" /> }
                     </div>
                     <HammerAnimation keyPress={keyPress}/>
             </motion.button>

@@ -1,19 +1,18 @@
-import { useEffect, useRef } from "react";
+import { keyAnimations, type AnimationKind } from "@/configs/keyAnimations.config";
+import type { TargetType } from "@/state/GameReducer";
+import { useRef, useEffect } from "react";
 
-export interface EffectAndTargetAnimation {
-    src: string,
-    className: string
-    speed? : number
-}
-
-export default function TemplateAnimation({src, className, speed} : EffectAndTargetAnimation) {
+export default function KeyAnimation({targetName, animationKind}: {targetName: TargetType, animationKind: AnimationKind}) {
+    const {src, speed, className} = keyAnimations[targetName][animationKind];
     if(!src) return;
+
     const ref = useRef<HTMLVideoElement>(null);
     useEffect(() => {
         if(ref.current && speed){
             ref.current.playbackRate = speed
         }
     },[ref.current, speed])
+    
     return (
             <video autoPlay loop muted playsInline className={className} ref={ref}>
                 <source src={src} type="video/webm" />
