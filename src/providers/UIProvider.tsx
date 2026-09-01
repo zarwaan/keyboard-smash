@@ -7,6 +7,7 @@ type WalkthroughPhaseType = 'settings' |
                             'instructions' | 
                             'hit_target_v3' |
                             'bomb_u' |
+                            'powerups' |
                             'score_display' |
                             'lives' |
                             'share_score' | 

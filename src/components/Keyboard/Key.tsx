@@ -18,6 +18,7 @@ export default function Key({ keyOptions }: { keyOptions: keyType }) {
     const keyPress = isPressed(keyOptions.label) && !keyOptions.disabled;
 
     const isTarget = (t: TargetType) => getTargetType(keyOptions.label)===t && !keyOptions.disabled
+    const isPowerupWalkthrough = walkthroughPhase==='powerups'; 
 
     const targetAnim : TargetType | null =
     (
@@ -33,14 +34,20 @@ export default function Key({ keyOptions }: { keyOptions: keyType }) {
     )
     ? 'bomb' : 
     (
+        (isPowerupWalkthrough && (keyOptions.label.toLowerCase() === 'g'))
+        ||
         isTarget('shield')
     )
     ? 'shield' :
     (
+        (isPowerupWalkthrough && (keyOptions.label === '7'))
+        ||
         isTarget('life')
     )
     ? 'life' :
     (
+        (isPowerupWalkthrough && (keyOptions.label === '.'))
+        ||
         isTarget('fireAll')
     )
     ? 'fireAll' :
@@ -53,6 +60,8 @@ export default function Key({ keyOptions }: { keyOptions: keyType }) {
             (walkthroughPhase==='hit_target_v3' && (keyOptions.label.toLowerCase() === 'v' || keyOptions.label === '3')) 
             ||
             (walkthroughPhase==='bomb_u' && (keyOptions.label.toLowerCase() === 'u')) 
+            ||
+            (isPowerupWalkthrough && ['7','g','.'].includes(keyOptions.label.toLowerCase()))
             ?
             10
             :

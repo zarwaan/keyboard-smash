@@ -63,7 +63,13 @@ export default function WalkThroughToolTip() {
             elemId: "#key-u",
             label: "Watch out for bombs!",
             from: 'right',
-            next: 'score_display'
+            next: 'powerups'
+        },
+        powerups: {
+            elemId: '#key-0',
+            label: "Collect powerups!",
+            from: 'right',
+            next: 'score_display',
         },
         "$$OVER$$": {} as phaseDetails
     };
