@@ -1,5 +1,5 @@
 import { keyLengthConfig, QwertyRows } from "@/configs/keys.config"
-import type { keyType } from "@/types/keyType";
+import type { keyType } from "@/types/key.type";
 import Key from "./Key";
 import ArrowKeys from "./ArrowKeys";
 

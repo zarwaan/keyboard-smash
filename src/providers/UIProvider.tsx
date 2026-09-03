@@ -3,7 +3,8 @@ import usePersistentState from "@/hooks/usePersistentState";
 import { createContext, useContext, useEffect, useState } from "react"
 
 type theme = 'light' | 'dark';
-type WalkthroughPhaseType = 'settings' | 
+export type WalkthroughPhaseType = 
+                            'settings' | 
                             'instructions' | 
                             'hit_target_v3' |
                             'bomb_u' |

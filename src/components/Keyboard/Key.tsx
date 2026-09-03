@@ -1,10 +1,12 @@
 import { useGameContext } from "@/providers/GameProvider";
-import type { keyType } from "@/types/keyType";
+import type { keyType } from "@/types/key.type";
 import { useUIContext } from "@/providers/UIProvider";
 import HammerAnimation from "../Animations/HammerAnimation";
-import type { TargetType } from "@/state/GameReducer";
 import { motion } from "motion/react";
 import KeyAnimation from "../Animations/KeyAnimation";
+import { TARGETS } from "@/configs/targets.config";
+import { getTargetKeysByCondition } from "@/utils/getTargetKeysByCondition";
+import type { TargetType } from "@/types/targets.type";
 
 export default function Key({ keyOptions }: { keyOptions: keyType }) {
     const widthStyle = keyOptions.length ? { width: keyOptions.length } : {flexGrow : 1};
@@ -17,50 +19,22 @@ export default function Key({ keyOptions }: { keyOptions: keyType }) {
     const keyPress = isPressed(keyOptions.label) && !keyOptions.disabled;
 
     const isTarget = (t: TargetType) => getTargetType(keyOptions.label)===t && !keyOptions.disabled
-    const isPowerupWalkthrough = walkthroughPhase==='powerups'; 
 
-    const targetAnim : TargetType | null =
-    (
-        (walkthroughPhase==='hit_target_v3' && (keyOptions.label.toLowerCase() === 'v' || keyOptions.label === '3'))
+    const targetAnim = getTargetKeysByCondition(t => (
+        (
+            TARGETS[t].walkthrough.phase === walkthroughPhase 
+            && 
+            (TARGETS[t].walkthrough.keyLabels as string[]).includes(keyOptions.label.toLowerCase())
+        )
         ||
-        isTarget('target')
-    ) 
-    ? 'target' :
-    (
-        (walkthroughPhase==='bomb_u' && (keyOptions.label.toLowerCase() === 'u'))
-        ||
-        isTarget('bomb')
-    )
-    ? 'bomb' : 
-    (
-        (isPowerupWalkthrough && (keyOptions.label.toLowerCase() === 'g'))
-        ||
-        isTarget('shield')
-    )
-    ? 'shield' :
-    (
-        (isPowerupWalkthrough && (keyOptions.label === '7'))
-        ||
-        isTarget('life')
-    )
-    ? 'life' :
-    (
-        (isPowerupWalkthrough && (keyOptions.label === '.'))
-        ||
-        isTarget('fireAll')
-    )
-    ? 'fireAll' :
-    null
+        isTarget(t)
+    )).at(0) ?? null;
 
     const effectAnim : TargetType | null = hit ? hit.type : null;
 
     const zIndex = () => {
         return (
-            (walkthroughPhase==='hit_target_v3' && (keyOptions.label.toLowerCase() === 'v' || keyOptions.label === '3')) 
-            ||
-            (walkthroughPhase==='bomb_u' && (keyOptions.label.toLowerCase() === 'u')) 
-            ||
-            (isPowerupWalkthrough && ['7','g','.'].includes(keyOptions.label.toLowerCase()))
+            targetAnim && walkthroughPhase!=="$$OVER$$"
             ?
             10
             :

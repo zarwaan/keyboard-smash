@@ -1,4 +1,6 @@
-import type { GameEvent, Score } from "@/state/GameReducer";
+import { TARGETS } from "@/configs/targets.config";
+import type { Score } from "@/state/GameReducer";
+import type { GameEvent, TargetEmoji } from "@/types/targets.type";
 
 async function copyToClipboard(text: string) {
     try{
@@ -19,16 +21,9 @@ export default async function returnTextResult(score: Score, difficulty: string,
         return [true, ''];
 
     const createEmojiSequence = () => {
-        const seq : Array<'🎯'|'❌'|'💣'|'🛡️'|'❤️'|'⚡️'> = gameEventSequence.map(e => {
-            switch(e){
-                case "BOMB_EVENT": return '💣';
-                case "HIT_EVENT": return '🎯';
-                case "MISS_EVENT": return '❌';
-                case "SHIELD_EVENT": return '🛡️';
-                case "EXTRA_LIFE_EVENT": return '❤️';
-                case "FIRE_ALL_EVENT": return '⚡️'
-            }
-        })
+        const seq : Array<TargetEmoji> = gameEventSequence.map(ev =>
+            Object.values(TARGETS).find(tp => tp.gameSequenceEvent===ev)?.emoji || '❌'
+        )
         return seq;
     }
 

@@ -1,41 +1,22 @@
-import hitEffect from "@/assets/audio/effects/hit.mp3"
-import bgMusic from "@/assets/audio/music/bgmusic2.mp3"
-import missEffect from "@/assets/audio/effects/miss2.mp3"
-import bombEffect from "@/assets/audio/effects/bomb2.mp3"
-import gameover from "@/assets/audio/effects/gameover.mp3"
-import life from "@/assets/audio/effects/life.mp3"
-import shield from "@/assets/audio/effects/shield.mp3"
-import fireAll from "@/assets/audio/effects/thor.mp3"
+import bgMusic from "@/assets/audio/music/bgmusic2.mp3" //
+import missEffect from "@/assets/audio/effects/miss2.mp3" //
+import gameover from "@/assets/audio/effects/gameover.mp3" //
 
-export interface AudioTrackInterface {
-    src: string,
-    volume: number,
-    poolSize: number,
-    audioType: "Music" | "Effect",
-}
+import type { AudioTrackInterface } from "@/types/sounds.type"
+import { getTargetKeysByCondition } from "@/utils/getTargetKeysByCondition"
+import { TARGETS } from "./targets.config"
+import type { TargetType } from "@/types/targets.type"
 
-export const AUDIO_TRACKS = {
-    'bg' : { // must repeat
+const NonTargetAudios = {
+    'bg' : {
         src: bgMusic,
         volume: 1,
         poolSize: 1,
         audioType: "Music"
     },
-    'hit' : {
-        src: hitEffect,
-        volume: 0.8,
-        poolSize: 5,
-        audioType: "Effect"
-    },
     'miss' : {
         src: missEffect,
         volume: 0.3,
-        poolSize: 5,
-        audioType: "Effect"
-    },
-    'bomb' : {
-        src: bombEffect,
-        volume: 1,
         poolSize: 5,
         audioType: "Effect"
     },
@@ -45,22 +26,15 @@ export const AUDIO_TRACKS = {
         poolSize: 1,
         audioType: "Effect"
     },
-    'extra_life': {
-        src: life,
-        volume: 1,
-        poolSize: 5,
-        audioType: "Effect"
-    },
-    'shield': {
-        src: shield,
-        volume: 1,
-        poolSize: 5,
-        audioType: "Effect"
-    },
-    "fireAll": {
-        src: fireAll,
-        volume: 1,
-        poolSize: 5,
-        audioType: "Effect"
-    }
-} satisfies Record<string, AudioTrackInterface>
+} as const satisfies Record<string, AudioTrackInterface>
+
+const TargetAudios = {} as Record<TargetType, AudioTrackInterface>;
+
+getTargetKeysByCondition(() => true).forEach(t => {
+    TargetAudios[t] = TARGETS[t].soundEffect
+});
+
+export const AUDIO_TRACKS = {
+    ...TargetAudios satisfies Record<TargetType, AudioTrackInterface>,
+    ...NonTargetAudios,
+} as const satisfies Record<string, AudioTrackInterface>

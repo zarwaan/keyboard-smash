@@ -4,9 +4,10 @@ import { useGameSettingsContext } from "./GameSettingsProvider";
 import { difficulties } from "@/configs/difficulties.config";
 import { useSoundContext } from "./SoundProvider";
 import { useKeyboardInput } from "@/hooks/useKeyboardInput";
-import { gameReducer, initialGameState, type Target, type HitEvent, type Score, type GameReducerState, type GameEvent, type TargetType, POSSIBLE_TARGET_TYPES } from "@/state/GameReducer";
+import { gameReducer, initialGameState, type Target, type HitEvent, type Score, type GameReducerState } from "@/state/GameReducer";
 import { useUIContext } from "./UIProvider";
-// import type { AudioController } from "@/hooks/useAudioPool";
+import type { GameEvent, TargetType } from "@/types/targets.type";
+import { TARGETS } from "@/configs/targets.config";
 
 interface GameState {
     gameId: number;
@@ -41,7 +42,8 @@ function pickRandomKey(exclude: Set<string>): string | null {
 
 export default function GameProvider({ children }: { children: React.ReactNode }) {
     const { difficulty, playMode } = useGameSettingsContext();
-    const { bombEffect, hitEffect, missEffect, bgMusic, gameOverEffect, shieldEffect, extraLifeEffect, fireAllEffect } = useSoundContext();
+    const { gameAudios } = useSoundContext();
+    const bgMusic = gameAudios.bg;
     const { targetInterval, timeActive, bombProbability } = difficulties[difficulty];
     const { createToast } = useUIContext();
 
@@ -60,7 +62,7 @@ export default function GameProvider({ children }: { children: React.ReactNode }
         const random = Math.random();
         let cumulativeProbability = 0;
 
-        return POSSIBLE_TARGET_TYPES.find(type => {
+        return (Object.keys(TARGETS) as TargetType[]).find(type => {
             cumulativeProbability += PROBABILITIES[type];
             return random < cumulativeProbability;
         })!;
@@ -114,15 +116,7 @@ export default function GameProvider({ children }: { children: React.ReactNode }
 
         dispatch({ type: "HIT_TARGET", key: target.key, now: Date.now(), infiniteLives: isInfiniteLives() });
 
-        (() => {
-            switch(target.type){
-                case "bomb": return bombEffect;
-                case "target": return hitEffect;
-                case "life": return extraLifeEffect;
-                case "shield": return shieldEffect;
-                case "fireAll": return fireAllEffect;
-            }
-        })().play();
+        gameAudios[target.type].play();
 
         if(target.type==="shield") 
             createToast({ type: "INFO", label: "Shield Activated!" })
@@ -147,14 +141,6 @@ export default function GameProvider({ children }: { children: React.ReactNode }
         };
 
         spawn();
-        // dispatch({
-        //     type: "ADD_TARGET",
-        //     target: { 
-        //         key : 'e', 
-        //         expiresAt: Date.now() + timeActive, 
-        //         type: "fireAll"
-        //     },
-        // })
         
         const id = window.setInterval(() => {
             if (!stateRef.current.isPaused) spawn();
@@ -170,7 +156,7 @@ export default function GameProvider({ children }: { children: React.ReactNode }
 
             if(!stateRef.current.powerUps.shield.active) {
                 const missed = stateRef.current.targetKeys.filter(t => t.expiresAt <= now && t.type==="target").length;
-                if (missed > 0) missEffect.play();
+                if (missed > 0) gameAudios.miss.play();
             }
 
             dispatch({ type: "EXPIRE_TARGETS", now, infiniteLives: isInfiniteLives() });
@@ -184,7 +170,7 @@ export default function GameProvider({ children }: { children: React.ReactNode }
     useEffect(() => {
         if (!state.isGameOver) return;
         pauseGame();
-        gameOverEffect.play();
+        gameAudios['game_over'].play();
     }, [state.isGameOver]);
 
     return (

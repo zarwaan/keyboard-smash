@@ -1,9 +1,11 @@
-import { keyAnimations, type AnimationKind } from "@/configs/keyAnimations.config";
-import type { TargetType } from "@/state/GameReducer";
+import { TARGETS } from "@/configs/targets.config";
+import type { AnimationKind, AnimationProperties } from "@/types/animations.type";
+import type { TargetType } from "@/types/targets.type";
 import { useRef, useEffect } from "react";
 
 export default function KeyAnimation({targetName, animationKind}: {targetName: TargetType, animationKind: AnimationKind}) {
-    const {src, speed, className} = keyAnimations[targetName][animationKind];
+    const {src, speed, className} = TARGETS[targetName]['animation'][animationKind] as AnimationProperties;
+    
     if(!src) return;
 
     const ref = useRef<HTMLVideoElement>(null);

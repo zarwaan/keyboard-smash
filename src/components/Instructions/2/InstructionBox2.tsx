@@ -1,22 +1,20 @@
 import { useUIContext } from "@/providers/UIProvider";
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect } from "react";
-import type { TargetType } from "@/state/GameReducer";
-import dig from '@/assets/images/targets/diglett.webm';
-import bomb from '@/assets/images/targets/bomb.webm';
-import shield from '@/assets/images/targets/shield.webm';
-import life from '@/assets/images/targets/life.webm';
-import thor from '@/assets/images/targets/thor.webm'
 import SectionBox from "@/components/Settings/Section/SectionBox";
 import SectionHeader from "@/components/Settings/Section/SectionHeader";
+import type { TargetKind, TargetType } from "@/types/targets.type";
+import { TARGETS } from "@/configs/targets.config";
+import { getTargetKeysByCondition } from "@/utils/getTargetKeysByCondition";
 
-const TargetDesc = (config : {src: string, desc: string, label: string, className: string}) => {
+const TargetDesc = ({targetName} : {targetName: TargetType}) => {
+    const config = TARGETS[targetName];
     return(
         <div className=" flex flex-row gap-9 w-full">
             <div className="w-8/100  border-blue-300 flex flex-col gap-1">
                 <div className="flex flex-center">
-                    <video autoPlay loop muted playsInline className={config.className}>
-                        <source src={config.src} type="video/webm" />
+                    <video autoPlay loop muted playsInline className={config.desc.className}>
+                        <source src={config.animation.targeting.src} type="video/webm" />
                         Your browser does not support the video tag.
                     </video>
                 </div>
@@ -25,10 +23,14 @@ const TargetDesc = (config : {src: string, desc: string, label: string, classNam
                 </div>
             </div>
             <div className="grow flex justify-start items-center font-semibold text-xl">
-                {config.desc}
+                {config.desc.text}
             </div>
         </div>
     )
+}
+
+function getArrayOfTargetKind(tk: TargetKind) {
+    return getTargetKeysByCondition(t => TARGETS[t].kind===tk)
 }
 
 export default function InstructionBox2() {
@@ -49,39 +51,6 @@ export default function InstructionBox2() {
         };
     }, [isInstructionOpen, closeInstruction]);
 
-    const configs : Record<TargetType, {src: string, desc: string, label: string, className: string}> = {
-        target: {
-            src: dig,
-            desc: 'Smash your keyboard to hit! Missing one costs you a life',
-            label: "Target",
-            className: 'w-[90%]'
-        },
-        bomb: {
-            src: bomb,
-            desc: 'Avoid the bombs, they cost you two lives!',
-            label: "Bomb",
-            className: 'w-[65%]'
-        },
-        shield: {
-            src: shield,
-            desc: 'A 10 second immunity from all misses and bombs',
-            label: "Shield",
-            className: 'w-[75%]'
-        },
-        life: {
-            src: life,
-            desc: 'Adds one life',
-            label: "Extra life",
-            className: 'w-[85%]'
-        },
-        fireAll: {
-            src: thor,
-            desc: 'Engages all keys and activates a shield for 10 seconds',
-            label: "Thor's hammer",
-            className: 'w-[85%]'
-        }
-    }
-
     return (
         <AnimatePresence>
         {    
@@ -98,26 +67,27 @@ export default function InstructionBox2() {
                     Instructions
                 </div>
                 <div className=" border-red-500 flex flex-col gap-3">
-                    <SectionBox>
-                        <SectionHeader title="Target" />
-                        <div className="flex flex-col gap-1 mt-2">
-                            <TargetDesc {...configs.target} />
-                        </div>
-                    </SectionBox>
-                    <SectionBox>
-                        <SectionHeader title="Bomb" />
-                        <div className="flex flex-col gap-1 mt-2">
-                            <TargetDesc {...configs.bomb} />
-                        </div>
-                    </SectionBox>
-                    <SectionBox>
-                        <SectionHeader title="Power Ups" />
-                        <div className="flex flex-col gap-2 mt-2">
-                            <TargetDesc {...configs.shield} />
-                            <TargetDesc {...configs.life} />
-                            <TargetDesc {...configs.fireAll} />
-                        </div>
-                    </SectionBox>
+                    {
+                        [
+                            ...new Set(
+                                (Object.keys(TARGETS) as TargetType[])
+                                    .map((tt) => {
+                                        return TARGETS[tt].kind;
+                                    }
+                                )
+                            )
+                        ]
+                        .map(tk => (
+                            <SectionBox>
+                                <SectionHeader title={tk.slice(0,1).toUpperCase() + tk.slice(1) + "keys"} />
+                                <div className="flex flex-col gap-2 mt-2">
+                                    {
+                                        getArrayOfTargetKind(tk).map(tt => <TargetDesc targetName={tt} />)
+                                    }
+                                </div>
+                            </SectionBox>
+                        ))
+                    }
                 </div>
                 <div>
                     <button className="px-4 py-1 rounded-full bg-green-800 text-(--full-white) text-lg shadow-xl cursor-pointer m-2"

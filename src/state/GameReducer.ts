@@ -1,18 +1,5 @@
-export const POSSIBLE_TARGET_TYPES = [
-    "target",
-    "bomb",
-    "shield",
-    "life",
-    "fireAll"
-] as const
-
-export const NON_POWERUP_TYPES = [
-    "target",
-    "bomb"
-] as const
-
-export type TargetType = (typeof POSSIBLE_TARGET_TYPES)[number]
-export type PowerUpType = Exclude<TargetType, (typeof NON_POWERUP_TYPES)[number]>
+import { TARGETS } from "@/configs/targets.config";
+import type { PowerUpType, TargetType, GameEvent } from "@/types/targets.type";
 
 export interface Target {
     key: string;
@@ -38,8 +25,6 @@ export interface PowerUpProperties {
     active: boolean, 
     expiresAt: number | null
 }
-
-export type GameEvent = "HIT_EVENT" | "MISS_EVENT" | "BOMB_EVENT" | "SHIELD_EVENT" | "EXTRA_LIFE_EVENT" | "FIRE_ALL_EVENT"
 
 export interface GameReducerState {
     gameId: number;
@@ -88,8 +73,8 @@ function applyLivesDelta(score: Score, delta: number, infiniteLives: boolean): S
     return { ...score, lives: infiniteLives ? score.lives : score.lives + delta };
 }
 
-function isPowerUp(t: TargetType){
-    return !(NON_POWERUP_TYPES.includes(t as never))
+function isPowerUp(t: TargetType): t is PowerUpType {
+    return TARGETS[t].kind==="powerup"
 }
 
 function activatePowerUp(prevPowerUps: GameReducerState['powerUps'], powerUpName: PowerUpType, now: number) : GameReducerState['powerUps'] {
@@ -200,7 +185,7 @@ export function gameReducer(state: GameReducerState, action: GameAction): GameRe
             let powerUps = { ...state.powerUps }
 
             if(isPowerUp(target.type)) 
-                powerUps = activatePowerUp(state['powerUps'], target.type as never, action.now);
+                powerUps = activatePowerUp(state['powerUps'], target.type, action.now);
 
             return {
                 ...state,

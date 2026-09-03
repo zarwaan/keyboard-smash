@@ -1,31 +1,25 @@
+import { AUDIO_TRACKS } from "@/configs/sounds.configs";
 import useAudioPool, { type AudioController } from "@/hooks/useAudioPool"
 import { createContext, useContext } from "react"
 
-interface GameAudios {
-    bgMusic: AudioController
-    hitEffect: AudioController,
-    missEffect: AudioController,
-    bombEffect: AudioController,
-    gameOverEffect: AudioController,
-    extraLifeEffect: AudioController,
-    shieldEffect: AudioController,
-    fireAllEffect: AudioController,
+type GameAudios = Record<keyof typeof AUDIO_TRACKS,AudioController>;
+
+interface GameAudiosContextType {
+    gameAudios: GameAudios
 }
 
-const GameAudiosContext = createContext<GameAudios>({} as GameAudios);
+const GameAudiosContext = createContext<GameAudiosContextType>({} as GameAudiosContextType);
 
 export default function SoundProvider({children} : {children: React.ReactNode}) {
-    const bgMusic = useAudioPool("bg");
-    const hitEffect = useAudioPool("hit");
-    const missEffect = useAudioPool("miss");
-    const bombEffect = useAudioPool("bomb");
-    const gameOverEffect = useAudioPool("game_over");
-    const extraLifeEffect = useAudioPool("extra_life");
-    const shieldEffect = useAudioPool("shield");
-    const fireAllEffect = useAudioPool("fireAll");
+    const gameAudios = {} as GameAudios;
+
+    (Object.keys(AUDIO_TRACKS) as (keyof typeof AUDIO_TRACKS)[]).forEach((at) => {
+        gameAudios[at] = useAudioPool(at)
+    })
+
     return (
         <GameAudiosContext.Provider value={{
-            bgMusic, hitEffect, missEffect, bombEffect, gameOverEffect, extraLifeEffect, shieldEffect, fireAllEffect
+            gameAudios
         }}>
             {children}
         </GameAudiosContext.Provider>
