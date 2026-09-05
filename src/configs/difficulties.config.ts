@@ -1,7 +1,13 @@
 import type { GameSettings } from "@/providers/GameSettingsProvider";
 
+export interface difficultyProps {
+    targetInterval: number, 
+    timeActive: number, 
+    bombProbability: number
+}
+
 export const difficulties : 
-        Record<GameSettings['difficulty'], {targetInterval: number, timeActive: number, bombProbability: number}>
+        Record<GameSettings['difficulty'], difficultyProps>
         =
         {
             "easy": {
@@ -30,3 +36,12 @@ export const difficulties :
                 bombProbability: 0.1
             },
         }
+
+export const STEP_EVERY = 15; // in seconds
+export const STEPS = 10;
+
+export const stepIncrements: difficultyProps = {
+    timeActive: -200,
+    targetInterval: -200,
+    bombProbability: 0.03
+}

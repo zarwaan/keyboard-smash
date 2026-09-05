@@ -6,14 +6,14 @@ export interface dropdownOptionType<T> {
     value: T
 }
 
-export default function Dropdown<T>({optionList, onOptionSelect, selectedOption}: 
-    {optionList: dropdownOptionType<T>[], onOptionSelect: (_: T) => void, selectedOption: T}) {
+export default function Dropdown<T>({optionList, onOptionSelect, selectedOption, stop}: 
+    {optionList: dropdownOptionType<T>[], onOptionSelect: (_: T) => void, selectedOption: T, stop? : boolean}) {
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const closeDropdown = () => setDropdownOpen(false);
     return (
         <>
-        <div className="theme-transition bg-gray-400/30 w-full py-1 px-2 rounded-lg flex justify-between cursor-pointer relative"
-        onClick={() => setDropdownOpen(prev => !prev)}>
+        <div className={`theme-transition bg-gray-400/30 w-full py-1 px-2 rounded-lg flex justify-between ${stop ? 'cursor-not-allowed': 'cursor-pointer' } relative`}
+        onClick={() => {if(stop) return; setDropdownOpen(prev => !prev)}}>
             <span>{optionList.find(o => o.value === selectedOption)?.label}</span>
             <motion.span animate={{
                 rotate: dropdownOpen ? 180 : 0

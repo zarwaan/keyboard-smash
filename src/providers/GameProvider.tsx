@@ -1,13 +1,14 @@
 import { QwertyRows } from "@/configs/keys.config";
-import { createContext, useContext, useEffect, useReducer, useRef } from "react";
+import { createContext, useContext, useEffect, useReducer, useRef, useState } from "react";
 import { useGameSettingsContext } from "./GameSettingsProvider";
-import { difficulties } from "@/configs/difficulties.config";
+import { difficulties, STEP_EVERY, stepIncrements, STEPS } from "@/configs/difficulties.config";
 import { useSoundContext } from "./SoundProvider";
 import { useKeyboardInput } from "@/hooks/useKeyboardInput";
 import { gameReducer, initialGameState, type Target, type HitEvent, type Score, type GameReducerState } from "@/state/GameReducer";
 import { useUIContext } from "./UIProvider";
 import type { GameEvent, TargetType } from "@/types/targets.type";
 import { TARGETS } from "@/configs/targets.config";
+import useEffectLog from "@/hooks/useEffectLog";
 
 interface GameState {
     gameId: number;
@@ -42,15 +43,20 @@ function pickRandomKey(exclude: Set<string>): string | null {
 
 export default function GameProvider({ children }: { children: React.ReactNode }) {
     const { difficulty, playMode } = useGameSettingsContext();
+    const initDiffProperties = difficulties[difficulty];
     const { gameAudios } = useSoundContext();
     const bgMusic = gameAudios.bg;
-    const { targetInterval, timeActive, bombProbability } = difficulties[difficulty];
+    const [diff, setDiff] = useState(initDiffProperties);
     const { createToast } = useUIContext();
+    const [step, setStep] = useState(0);
+
+    useEffect(() => {
+        setDiff(initDiffProperties)
+    },[initDiffProperties])
 
     const POWERUP_PROBABILITY = 0.03; // IMP REMEMBER TO CHANGE
-
     const PROBABILITIES : Record<TargetType,number> = {
-        bomb: bombProbability,
+        bomb: diff.bombProbability,
         shield: POWERUP_PROBABILITY,
         life: POWERUP_PROBABILITY,
         fireAll: POWERUP_PROBABILITY,
@@ -90,7 +96,9 @@ export default function GameProvider({ children }: { children: React.ReactNode }
     const pausedAtRef = useRef(0);
 
     const startGame = () => {
-        dispatch({ type: "START_GAME" });
+        const now = Date.now()
+        setStep(0);
+        dispatch({ type: "START_GAME", now });
         bgMusic.play();
     };
 
@@ -134,7 +142,7 @@ export default function GameProvider({ children }: { children: React.ReactNode }
                 type: "ADD_TARGET",
                 target: { 
                     key, 
-                    expiresAt: Date.now() + timeActive, 
+                    expiresAt: Date.now() + diff.timeActive, 
                     type: getRandomTargetType()
                 },
             });
@@ -144,14 +152,14 @@ export default function GameProvider({ children }: { children: React.ReactNode }
         
         const id = window.setInterval(() => {
             if (!stateRef.current.isPaused) spawn();
-        }, targetInterval);
+        }, diff.targetInterval);
 
         return () => window.clearInterval(id);
-    }, [state.gameState, targetInterval, timeActive, bombProbability]);
+    }, [state.gameState, diff.targetInterval, diff.timeActive, diff.bombProbability]);
 
     useEffect(() => {
         const id = window.setInterval(() => {
-            if (stateRef.current.isPaused) return;
+            if (stateRef.current.isPaused || stateRef.current.gameState==='stopped') return;
             const now = Date.now();
 
             if(!stateRef.current.powerUps.shield.active) {
@@ -161,7 +169,16 @@ export default function GameProvider({ children }: { children: React.ReactNode }
 
             dispatch({ type: "EXPIRE_TARGETS", now, infiniteLives: isInfiniteLives() });
             dispatch({ type: "CLEANUP_HIT_EVENTS", now });
-            dispatch({ type: "DEACTIVATE_POWERUPS", now})
+            dispatch({ type: "DEACTIVATE_POWERUPS", now});
+
+            dispatch({ type: 'TICK', now})
+            const stepTemp = Math.floor( stateRef.current.timeKeeping.elapsed / (STEP_EVERY * 1000))
+
+            if(
+                stepTemp <= STEPS 
+            )
+                setStep(stepTemp)
+
         }, 100);
 
         return () => window.clearInterval(id);
@@ -172,6 +189,17 @@ export default function GameProvider({ children }: { children: React.ReactNode }
         pauseGame();
         gameAudios['game_over'].play();
     }, [state.isGameOver]);
+
+    useEffect(() => {
+        if(step===0 || difficulty!=='incr') return;
+        setDiff(prev => ({
+            bombProbability: Number((prev.bombProbability + stepIncrements.bombProbability).toFixed(2)),
+            timeActive: prev.timeActive + stepIncrements.timeActive,
+            targetInterval: prev.targetInterval + stepIncrements.targetInterval
+        }))
+    },[step]);
+
+    useEffectLog(JSON.stringify(diff));
 
     return (
         <GameContext.Provider

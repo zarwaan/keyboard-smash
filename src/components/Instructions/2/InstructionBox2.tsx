@@ -79,7 +79,7 @@ export default function InstructionBox2() {
                         ]
                         .map(tk => (
                             <SectionBox>
-                                <SectionHeader title={tk.slice(0,1).toUpperCase() + tk.slice(1) + "keys"} />
+                                <SectionHeader title={tk.slice(0,1).toUpperCase() + tk.slice(1) + " keys"} />
                                 <div className="flex flex-col gap-2 mt-2">
                                     {
                                         getArrayOfTargetKind(tk).map(tt => <TargetDesc targetName={tt} />)

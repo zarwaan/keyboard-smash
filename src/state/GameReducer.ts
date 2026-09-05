@@ -35,7 +35,12 @@ export interface GameReducerState {
     gameState: "ongoing" | "stopped";
     isPaused: boolean;
     isGameOver: boolean;
-    powerUps: Record<PowerUpType,PowerUpProperties>
+    powerUps: Record<PowerUpType,PowerUpProperties>;
+    timeKeeping: {
+        startTime: number,
+        pausedDuration: number,
+        elapsed: number
+    }
 }
 
 const INITIAL_SCORE: Score = { targetsHit: 0, targetsMissed: 0, bombsHit: 0, lives: 7 };
@@ -55,11 +60,16 @@ export const initialGameState: GameReducerState = {
         shield: initPowerUpProperties,
         life: initPowerUpProperties,
         fireAll: initPowerUpProperties
+    },
+    timeKeeping: {
+        startTime: 0,
+        pausedDuration: 0,
+        elapsed: 0
     }
 };
 
 export type GameAction =
-    | { type: "START_GAME" }
+    | { type: "START_GAME"; now:number }
     | { type: "STOP_GAME" }
     | { type: "PAUSE_GAME" }
     | { type: "RESUME_GAME"; pausedDuration: number }
@@ -68,6 +78,7 @@ export type GameAction =
     | { type: "EXPIRE_TARGETS"; now: number; infiniteLives: boolean }
     | { type: "CLEANUP_HIT_EVENTS"; now: number }
     | { type: "DEACTIVATE_POWERUPS"; now: number}
+    | { type: 'TICK'; now:number}
 
 function applyLivesDelta(score: Score, delta: number, infiniteLives: boolean): Score {
     return { ...score, lives: infiniteLives ? score.lives : score.lives + delta };
@@ -114,10 +125,23 @@ function activatePowerUp(prevPowerUps: GameReducerState['powerUps'], powerUpName
 export function gameReducer(state: GameReducerState, action: GameAction): GameReducerState {
     switch (action.type) {
         case "START_GAME":
-            return { ...initialGameState, gameId: state.gameId + 1, gameState: "ongoing" };
+            return { ...initialGameState, gameId: state.gameId + 1, gameState: "ongoing",
+                timeKeeping: {
+                    ...initialGameState.timeKeeping,
+                    startTime: action.now,
+                    elapsed: 0
+                }
+             }
 
         case "STOP_GAME":
-            return { ...state, gameState: "stopped", isPaused: false, targetKeys: [], score: INITIAL_SCORE, powerUps: initialGameState['powerUps'] };
+            return { ...state, gameState: "stopped", isPaused: false, targetKeys: [], score: INITIAL_SCORE, powerUps: initialGameState['powerUps'],
+                timeKeeping: {
+                    ...state.timeKeeping,
+                    startTime: 0,
+                    elapsed: 0,
+                    pausedDuration: 0
+                }
+             };
 
         case "PAUSE_GAME":
             return state.gameState === "ongoing" ? { ...state, isPaused: true } : state;
@@ -141,7 +165,11 @@ export function gameReducer(state: GameReducerState, action: GameAction): GameRe
                     ...t,
                     expiresAt: t.expiresAt + action.pausedDuration,
                 })),
-                powerUps
+                powerUps,
+                timeKeeping: {
+                    ...state.timeKeeping,
+                    pausedDuration: state.timeKeeping.pausedDuration + action.pausedDuration
+                }
             };
 
         case "ADD_TARGET": {
@@ -249,6 +277,16 @@ export function gameReducer(state: GameReducerState, action: GameAction): GameRe
                 powerUps
             }
         }
+
+        case 'TICK':
+            return {
+                ...state, 
+                timeKeeping: 
+                {
+                    ...state.timeKeeping, 
+                    elapsed:  action.now - state.timeKeeping.startTime - state.timeKeeping.pausedDuration
+                }
+            }
 
         default:
             return state;
