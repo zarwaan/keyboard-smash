@@ -13,20 +13,32 @@ Choose your difficulty, customize your game, and see how long you can survive!
 - ⌨️ Interactive on-screen keyboard
 - 🎯 Randomly generated targets
 - 💣 Surprise bomb targets
+- ✨ Power-ups with unique effects
 - ❤️ Lives and score system
 - 🎚️ Multiple difficulty levels
-- 🎮 Lives and Infinite game modes
+- 🎛️ Lives and Infinite game modes
 - 🌗 Light & dark themes
 - 🔊 Music and sound effects
-- ✨ Animated UI and game interactions
+- 👾 Animated UI and game interactions
+- 📤 Share your results with friends and challenge them to beat your score.
 
 ## 🕹️ How to Play
 
 - 🎯 **Smash the Targets!** — Hit every green target before it disappears.
 - 💣 **Bombs Away!** — Watch out for bombs; hitting one costs you 2 ❤️.
+- ⚡️ **Power Up!** — Hit special power-up targets to gain temporary abilities and advantages.
 - 📊 **Score. Survive. Repeat.** — Keep an eye on your score and lives.
 - 💀 **Stay Alive!** — Don't run out of ❤️.
 - ⚙️ **Set the Rules!** — Adjust the game to your liking.
+
+## 🎛️ Game Modes
+
+- ❤️ **Lives** — Survive as long as possible while managing a limited number of lives.
+- ♾️ **Infinite** — Keep smashing targets indefinitely and chase your highest score.
+
+## 🎚️ Difficulty Levels
+
+Choose from **Easy, Medium, Hard,** and **Impossible** — or take on **Increasing** difficulty, where the game progressively gets faster and more challenging as you play.
 
 ## 🛠️ Tech Stack
 
