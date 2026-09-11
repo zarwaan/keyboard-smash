@@ -1,0 +1,9 @@
+export type difficulty = "easy" | "medium" | "hard" | "impossible" | "incr"
+export type playModes = "lives" | "infinite" 
+
+export interface Score {
+    targetsHit: number;
+    targetsMissed: number;
+    bombsHit: number;
+    lives: number;
+}

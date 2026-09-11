@@ -1,5 +1,6 @@
 import { TARGETS } from "@/configs/targets.config";
 import type { PowerUpType, TargetType, GameEvent } from "@/types/targets.type";
+import type { Score } from "shared/types/shared.types"
 
 export interface Target {
     key: string;
@@ -12,13 +13,6 @@ export interface HitEvent {
     key: string;
     type: TargetType
     expiresAt: number;
-}
-
-export interface Score {
-    targetsHit: number;
-    targetsMissed: number;
-    bombsHit: number;
-    lives: number;
 }
 
 export interface PowerUpProperties {

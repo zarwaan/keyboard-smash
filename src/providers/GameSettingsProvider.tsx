@@ -1,11 +1,12 @@
 import useEffectLog from "@/hooks/useEffectLog";
 import usePersistentState from "@/hooks/usePersistentState";
 import { createContext, useContext, useState } from "react";
+import type { difficulty, playModes } from "shared/types/shared.types";
 
 export interface GameSettings {
     includeSpecialKeys : boolean ;
-    playMode : "lives" | "infinite" ;
-    difficulty : "easy" | "medium" | "hard" | "impossible" | "incr"
+    playMode : playModes;
+    difficulty : difficulty
     setIncludeSpecialKeys: (b: boolean) => void ;
     setPlayMode : (s: GameSettings['playMode']) => void ;
     setDifficulty : (_ : GameSettings['difficulty']) => void

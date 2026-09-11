@@ -1,6 +1,6 @@
 import { TARGETS } from "@/configs/targets.config";
-import type { Score } from "@/state/GameReducer";
 import type { GameEvent, TargetEmoji } from "@/types/targets.type";
+import type { Score } from "shared/types/shared.types";
 
 async function copyToClipboard(text: string) {
     try{

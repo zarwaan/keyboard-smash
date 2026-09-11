@@ -4,7 +4,8 @@ import { useGameSettingsContext } from "./GameSettingsProvider";
 import { difficulties, STEP_EVERY, stepIncrements, STEPS } from "@/configs/difficulties.config";
 import { useSoundContext } from "./SoundProvider";
 import { useKeyboardInput } from "@/hooks/useKeyboardInput";
-import { gameReducer, initialGameState, type Target, type HitEvent, type Score, type GameReducerState } from "@/state/GameReducer";
+import { gameReducer, initialGameState, type Target, type HitEvent, type GameReducerState } from "@/state/GameReducer";
+import type { Score } from "shared/types/shared.types"
 import { useUIContext } from "./UIProvider";
 import type { GameEvent, TargetType } from "@/types/targets.type";
 import { TARGETS } from "@/configs/targets.config";
