@@ -1,5 +1,5 @@
-import type { DBUser } from "../types/db.type";
 import mongoose, { Schema } from "mongoose";
+import { DBUser } from "shared/types/shared.types";
 
 const UserSchema = new Schema<DBUser>({
     username: {

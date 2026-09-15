@@ -7,3 +7,9 @@ export interface Score {
     bombsHit: number;
     lives: number;
 }
+
+export interface DBUser {
+    username: string;
+    password: string;
+    email?: string;
+}
