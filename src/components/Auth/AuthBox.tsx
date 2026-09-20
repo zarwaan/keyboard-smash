@@ -1,7 +1,7 @@
 import { useUIContext } from "@/providers/UIProvider";
 import { AnimatePresence, motion } from "motion/react";
 import NavBar from "./Nav/NavBar";
-import AuthNavProvider from "./Nav/AuthNavProvider";
+import AuthNavProvider from "./AuthProvider";
 import { useEffect } from "react";
 import Panel from "./panels/Panel";
 

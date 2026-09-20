@@ -8,6 +8,11 @@ import { KSEnv } from './envConfig';
 const app = express();
 app.use(express.json())
 
+app.use(cors({
+    origin: KSEnv.CLIENT_URL,
+    credentials: true
+}))
+
 app.use(session({
     secret: KSEnv.SESSION_SECRET!,
     resave: false,

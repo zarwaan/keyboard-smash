@@ -1,8 +1,6 @@
 import * as dotenv from 'dotenv';
 
-dotenv.config({
-    path: "server/.env"
-});
+dotenv.config();
 
 if(!process.env.SESSION_SECRET){
     console.error("No session secret provided!")

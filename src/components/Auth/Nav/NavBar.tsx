@@ -1,4 +1,4 @@
-import { useAuthNav } from "./AuthNavProvider";
+import { useAuth } from "../AuthProvider";
 import NavButton from "./NavButton";
 
 export interface INavButton {
@@ -8,7 +8,7 @@ export interface INavButton {
 }
 
 export default function NavBar({}) {
-    const nav = useAuthNav();
+    const nav = useAuth();
     const NavButtonConfig : Record<typeof nav.view, INavButton>
      = {
         login: {

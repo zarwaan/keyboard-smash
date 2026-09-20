@@ -4,7 +4,9 @@ export interface IAuthNav {
     view: "login" | "register",
     pos: number,
     setLoginView: () => void,
-    setRegisterView: () => void
+    setRegisterView: () => void,
+    errorMessage: string | null,
+    setErrorMessage: (s: string | null) => void
 }
 
 const AuthNavContext = createContext<IAuthNav>({} as IAuthNav);
@@ -12,6 +14,7 @@ const AuthNavContext = createContext<IAuthNav>({} as IAuthNav);
 export default function AuthNavProvider({ children }: { children: React.ReactNode }) {
     const [view, setView] = useState<IAuthNav['view']>("login");
     const [pos, setPos] = useState(0);
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
     const setLoginView = () => {
         setView("login");
@@ -24,13 +27,13 @@ export default function AuthNavProvider({ children }: { children: React.ReactNod
     
     return (
         <AuthNavContext.Provider value={{
-            view, pos, setLoginView, setRegisterView
+            view, pos, setLoginView, setRegisterView, errorMessage, setErrorMessage
         }}>
             {children}
         </AuthNavContext.Provider>
     )
 }
 
-export function useAuthNav() {
+export function useAuth() {
     return useContext(AuthNavContext)
 }

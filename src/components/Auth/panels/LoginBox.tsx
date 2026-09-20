@@ -4,8 +4,12 @@ import OnBoardingBox from "../utils/OnBoardingBox";
 import Header from "../utils/Header";
 import InputBox from "../utils/InputBox";
 import SubmitButton from "../utils/SubmitButton";
+import ErrorMessage from "../utils/ErrorMessage";
+import { useAuth } from "../AuthProvider";
+import useFetch from "@/hooks/useFetch";
 
 export default function LoginBox({}) {
+    const {errorMessage} = useAuth();
     const [creds, setCreds] = useState<DBUser>({
         username: "",
         password: ""
@@ -35,10 +39,19 @@ export default function LoginBox({}) {
                         inputName={c}
                         placeholder={configs[c].placeholder}
                         inputType={configs[c].inputType}
+                        key={`login-${c}`}
                     />
                 )
             }
-            <SubmitButton onClick={()=>{}}/>
+            { errorMessage && <ErrorMessage />}
+            <SubmitButton 
+            props={[
+                '/auth/login', {
+                    method: "POST",
+                    credentials: "include",
+                    body: JSON.stringify(creds)
+                },false
+            ]}/>
         </OnBoardingBox>
     )
 }

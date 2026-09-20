@@ -13,3 +13,11 @@ export interface DBUser {
     password: string;
     email?: string;
 }
+
+export interface ResponseJsonBody {
+    message: string,
+    result: {
+        content? : any,
+        error? : any
+    }
+}

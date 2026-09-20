@@ -1,9 +1,9 @@
-import { useAuthNav } from "./AuthNavProvider";
+import { useAuth } from "../AuthProvider";
 import type { INavButton } from "./NavBar";
 import NavButtonHighlight from "./NavButtonHighlight";
 
 export default function NavButton({button}: {button: INavButton}) {
-    const nav = useAuthNav();
+    const nav = useAuth();
     return (
         <div className="flex-1 box-border">
             <button onClick={button.onclick} className="bor w-25 cursor-pointer relative py-0 outline-none!">

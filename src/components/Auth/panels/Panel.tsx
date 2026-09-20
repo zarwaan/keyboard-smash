@@ -1,9 +1,9 @@
-import { useAuthNav } from "../Nav/AuthNavProvider"
+import { useAuth } from "../AuthProvider"
 import LoginBox from "./LoginBox";
 import RegisterBox from "./RegisterBox";
 
 export default function Panel({}) {
-    const {view} = useAuthNav();
+    const {view} = useAuth();
     return (
         <>
             {view==="login" && <LoginBox />}

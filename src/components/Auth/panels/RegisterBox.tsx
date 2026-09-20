@@ -4,12 +4,15 @@ import OnBoardingBox from "../utils/OnBoardingBox";
 import Header from "../utils/Header";
 import InputBox from "../utils/InputBox";
 import SubmitButton from "../utils/SubmitButton";
+import ErrorMessage from "../utils/ErrorMessage";
+import { useAuth } from "../AuthProvider";
 
 type RegisterCreds = DBUser & {
     confirmPass: string
 }
 
 export default function RegisterBox({}) {
+    const {errorMessage} = useAuth();
     const [creds, setCreds] = useState<RegisterCreds>({
         username: "",
         password: "",
@@ -45,10 +48,12 @@ export default function RegisterBox({}) {
                         inputName={c}
                         placeholder={configs[c].placeholder}
                         inputType={configs[c].inputType}
+                        key={`register-${c}`}
                     />
                 )
             }
-            <SubmitButton onClick={()=>{}}/>
+            { errorMessage && <ErrorMessage />}
+            {/* <SubmitButton onClick={()=>{}}/> */}
         </OnBoardingBox>
     )
 }
