@@ -27,6 +27,10 @@ export interface UIState {
     isInstructionOpen : boolean,
     openInstruction : () => void,
     closeInstruction : () => void,
+    
+    isAuthOpen : boolean,
+    openAuth : () => void,
+    closeAuth : () => void,
 
     currentTheme : theme,
     setLightTheme : () => void,
@@ -53,6 +57,7 @@ const UIContext = createContext<UIState>({} as UIState)
 export default function UIProvider({children} : {children: React.ReactNode}) {
     const [ isSettingsOpen, openSettings, closeSettings ] = useBooleanState(false);
     const [isInstructionOpen, openInstruction, closeInstruction] = useBooleanState(false);
+    const [isAuthOpen, openAuth, closeAuth] = useBooleanState(false);
     const [isFirstTime, setIsFirstTime] = usePersistentState<boolean>('isFirstTime', true);
     const [walkthroughPhase, setWalkthroughPhase] = useState<WalkthroughPhaseType>(isFirstTime ? 'instructions' : '$$OVER$$');
 
@@ -102,6 +107,7 @@ export default function UIProvider({children} : {children: React.ReactNode}) {
         <UIContext.Provider value={{
             isSettingsOpen, openSettings, closeSettings, 
             isInstructionOpen, openInstruction, closeInstruction,
+            isAuthOpen, openAuth, closeAuth,
             currentTheme, setLightTheme, setDarkTheme,
             isMusicMuted, muteMusic, unmuteMusic,
             areEffectsMuted, muteEffects, unmuteEffects,

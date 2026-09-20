@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import InstructionsIcon from "./HeaderIcons/InstructionsIcon";
 import SettingsIcon from "./HeaderIcons/SettingsIcon";
+import AuthIcon from "./HeaderIcons/AuthIcon";
 
 export default function Header({}) {
     const heightToBeRef = useRef<HTMLSpanElement>(null);
@@ -24,6 +25,7 @@ export default function Header({}) {
             <div className="absolute w-full top-0 left-0 h-full borde border-white flex justify-end items-center gap-3.5 ">
                 <SettingsIcon />
                 <InstructionsIcon />
+                <AuthIcon />
             </div>
         </div>
     )

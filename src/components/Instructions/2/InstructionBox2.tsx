@@ -55,7 +55,7 @@ export default function InstructionBox2() {
         <AnimatePresence>
         {    
             isInstructionOpen && 
-            <motion.div className="border-0.5 absolute left-1/2 -translate-x-1/2 -top-20 m-auto text-(--text-color) border bg-(--bg-color) rounded-xl z-10 flex flex-col px-10 py-4 theme-transition gap-2"
+            <motion.div className="border-0.5 absolute left-1/2 -translate-x-1/2 -top-20 m-auto text-(--text-color) border bg-(--bg-color) rounded-xl z-11 flex flex-col px-10 py-4 theme-transition gap-2"
                 initial={{opacity: 0, y: 0}}
                 animate={{opacity: 1, y: "120px"}}
                 exit={{opacity: 0, y:0}}

@@ -31,7 +31,7 @@ function AppContent() {
 		<>
 			<ContentLayout />
 			<AnimatePresence>
-				{(uictx.isSettingsOpen || uictx.isInstructionOpen || uictx.walkthroughPhase!=='$$OVER$$') && <BackgroundBlur />}
+				{(uictx.isSettingsOpen || uictx.isInstructionOpen || uictx.isAuthOpen || uictx.walkthroughPhase!=='$$OVER$$') && <BackgroundBlur />}
 			</AnimatePresence>
 			<AnimatePresence>
 				{uictx.walkthroughPhase!=='$$OVER$$' && <WalkThroughToolTip />}
