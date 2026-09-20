@@ -2,8 +2,8 @@ import { useUIContext } from "@/providers/UIProvider";
 import { AnimatePresence, motion } from "motion/react";
 import NavBar from "./Nav/NavBar";
 import AuthNavProvider from "./Nav/AuthNavProvider";
-import LoginBox from "./panels/LoginBox";
 import { useEffect } from "react";
+import Panel from "./panels/Panel";
 
 export default function AuthBox({}) {
     const {isAuthOpen, closeAuth} = useUIContext();
@@ -36,7 +36,7 @@ export default function AuthBox({}) {
                         }}
                     >
                         <NavBar />
-                        <LoginBox />
+                        <Panel />
                     </motion.div>
                 }
             </AnimatePresence>
