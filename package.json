@@ -8,7 +8,7 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "server": "nodemon --exec tsx server/app.ts"
+    "server": "nodemon --exec \"tsx --tsconfig tsconfig.server.json server/app.ts\""
   },
   "nodemonConfig": {
     "ext": "ts, json",

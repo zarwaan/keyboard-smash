@@ -6,7 +6,7 @@ import InputBox from "../utils/InputBox";
 import SubmitButton from "../utils/SubmitButton";
 import ErrorMessage from "../utils/ErrorMessage";
 import { useAuth } from "../AuthProvider";
-import useFetch from "@/hooks/useFetch";
+import stringifyCreds from "../helpers/stringifyCreds";
 
 export default function LoginBox({}) {
     const {errorMessage} = useAuth();
@@ -49,7 +49,10 @@ export default function LoginBox({}) {
                 '/auth/login', {
                     method: "POST",
                     credentials: "include",
-                    body: JSON.stringify(creds)
+                    body: stringifyCreds<typeof creds>({
+                        ...creds,
+                        username: creds.username.trim().toLowerCase()
+                    })
                 },false
             ]}/>
         </OnBoardingBox>

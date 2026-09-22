@@ -4,12 +4,13 @@ import { motion } from "motion/react"
 import { useAuth } from "../AuthProvider"
 import { useEffect } from "react";
 
-export default function SubmitButton({props}: {props: Parameters<typeof useFetch>}) {
+export default function SubmitButton({props, checkAndSanitise = () => true}: {props: Parameters<typeof useFetch>, checkAndSanitise?: () => boolean}) {
     const {createToast, closeAuth} = useUIContext();
     const {setErrorMessage} = useAuth();
     const {data, loading, error, execute} = useFetch(...props);
     const onClick = () => {
         if(loading) return;
+        if(!checkAndSanitise()) return;
         execute();
     }
     useEffect(() => {

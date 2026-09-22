@@ -1,7 +1,8 @@
 import express from "express";
-import bcrypt from 'bcrypt'
+import bcrypt from 'bcrypt';
 import { UserModel } from "../models/User.model";
 import { DBUser } from "shared/types/shared.types";
+import { usernameCheck } from "shared/helpers/validationChecks";
 import { setSession } from "../utils/sessions.utils";
 import { jsonResponse } from "../utils/middleware.utils";
 
@@ -13,6 +14,20 @@ authRouter.get('/', (req,res)=> {
 
 authRouter.post('/signup', async (req, res) => {
     const body: DBUser = req.body;
+    const check = usernameCheck(body.username);
+    if(!check.valid){
+        return jsonResponse(res, 400, {
+            message: check.message
+        })
+    }
+    const existsingUser = await UserModel.findOne({
+        username: body.username.toLowerCase()
+    });
+    if(existsingUser) {
+        return jsonResponse(res,409,{
+            message: "Username is taken!",
+        })
+    }
     const hashedPassword = await bcrypt.hash(body.password,10);
     try {
         const newUser = await UserModel.create({

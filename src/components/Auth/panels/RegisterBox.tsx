@@ -1,18 +1,20 @@
 import { useState } from "react"
 import type { DBUser } from "shared/types/shared.types"
+import { usernameCheck } from "shared/helpers/validationChecks"
 import OnBoardingBox from "../utils/OnBoardingBox";
 import Header from "../utils/Header";
 import InputBox from "../utils/InputBox";
 import SubmitButton from "../utils/SubmitButton";
 import ErrorMessage from "../utils/ErrorMessage";
 import { useAuth } from "../AuthProvider";
+import stringifyCreds from "../helpers/stringifyCreds";
 
 type RegisterCreds = DBUser & {
     confirmPass: string
 }
 
 export default function RegisterBox({}) {
-    const {errorMessage} = useAuth();
+    const {errorMessage, setErrorMessage} = useAuth();
     const [creds, setCreds] = useState<RegisterCreds>({
         username: "",
         password: "",
@@ -37,6 +39,20 @@ export default function RegisterBox({}) {
             placeholder: "Enter your email (optional)..."
         },
     }
+
+    const checkAndSanitise = () : boolean => {
+        const check = usernameCheck(creds.username);
+        if(!check.valid){
+            setErrorMessage(check.message)
+            return false
+        }
+        if(creds.password !== creds.confirmPass){
+            setErrorMessage("Passwords don't match!")
+            return false
+        }
+        return true
+    }
+
     return (
         <OnBoardingBox>
             <Header g="Join us!" />
@@ -53,7 +69,19 @@ export default function RegisterBox({}) {
                 )
             }
             { errorMessage && <ErrorMessage />}
-            {/* <SubmitButton onClick={()=>{}}/> */}
+            <SubmitButton props={[
+                "/auth/signup",
+                {
+                    method: "POST",
+                    credentials: "include",
+                    body: stringifyCreds<Omit<RegisterCreds, "confirmPass">>({
+                        username: creds.username.trim().toLowerCase(),
+                        password: creds.password,
+                        email: creds.email
+                    })
+                },
+                false
+            ]} checkAndSanitise={checkAndSanitise}/>
         </OnBoardingBox>
     )
 }
