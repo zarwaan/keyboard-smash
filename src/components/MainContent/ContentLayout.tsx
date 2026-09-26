@@ -8,6 +8,7 @@ import Score from "../GameDisplay/ScoreDisplay/Score";
 import InstructionBox2 from "../Instructions/2/InstructionBox2";
 import AuthBox from "../Auth/AuthBox";
 import ProfileBox from "../Profile/ProfileBox";
+import AuthNavProvider from "../Auth/AuthBoxProvider";
 
 export default function ContentLayout() {
     return (
@@ -21,7 +22,9 @@ export default function ContentLayout() {
             </MainBody>
             <SettingsBox />
             <InstructionBox2 />
-            <AuthBox />
+            <AuthNavProvider>
+                <AuthBox />
+            </AuthNavProvider>
             <ProfileBox />
         </div>
     )
