@@ -6,7 +6,7 @@ import Header from "../utils/Header";
 import InputBox from "../utils/InputBox";
 import SubmitButton from "../utils/SubmitButton";
 import ErrorMessage from "../utils/ErrorMessage";
-import { useAuth } from "../AuthProvider";
+import { useAuth } from "../AuthBoxProvider";
 import stringifyCreds from "../helpers/stringifyCreds";
 
 type RegisterCreds = DBUser & {

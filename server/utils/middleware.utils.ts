@@ -2,12 +2,12 @@ import { Response } from "express";
 import { ResponseJsonBody } from "shared/types/shared.types";
 // import { ResponseJsonBody } from "../types/middleware.types";
 
-export const jsonResponse = (res: Response, status: number, jsonBody: Partial<ResponseJsonBody>) => {
-    const fullJsonBody: ResponseJsonBody = {
+export const jsonResponse = <T>(res: Response, status: number, jsonBody: Partial<ResponseJsonBody<T>>) => {
+    const fullJsonBody: ResponseJsonBody<T> = {
         message: "",
         result: {
             error: {},
-            content: {}
+            content: {} as T
         },
         ...jsonBody
     }

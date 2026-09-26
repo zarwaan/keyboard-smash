@@ -1,14 +1,14 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { ResponseJsonBody } from "shared/types/shared.types";
 
-export default function useFetch(
+export default function useFetch<T>(
     endPoint: string,
     options: RequestInit = {},
-    auto: boolean = true
+    auto: boolean = false
 ) {
-    const [data, setData] = useState<ResponseJsonBody>();
+    const [data, setData] = useState<ResponseJsonBody<T>>();
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<ResponseJsonBody>();
+    const [error, setError] = useState<ResponseJsonBody<T>>();
     const controllerRef = useRef<AbortController | null>(null);
 
     const fetchData = useCallback(async () => 
@@ -34,7 +34,7 @@ export default function useFetch(
                         }
                     }
                 )
-                const result = (await response.json()) as ResponseJsonBody;
+                const result = (await response.json()) as ResponseJsonBody<T>;
                 if(response.ok){
                     setData(result);
                 }
@@ -43,6 +43,9 @@ export default function useFetch(
                 }
             }
             catch(e){
+                if(e instanceof DOMException && e.name==="AbortError")
+                    return
+
                 setError({
                     message: "An unknown error occured",
                     result: {

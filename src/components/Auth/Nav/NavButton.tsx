@@ -1,4 +1,4 @@
-import { useAuth } from "../AuthProvider";
+import { useAuth } from "../AuthBoxProvider";
 import type { INavButton } from "./NavBar";
 import NavButtonHighlight from "./NavButtonHighlight";
 

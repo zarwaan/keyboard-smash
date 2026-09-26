@@ -1,4 +1,4 @@
-import { IUserSessionDetails } from "./middleware.types";
+import { IUserSessionDetails } from "shared/types/shared.types";
 
 declare module "express-session" {
     interface SessionData {

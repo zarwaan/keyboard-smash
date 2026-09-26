@@ -1,4 +1,4 @@
-import { useAuth } from "../AuthProvider";
+import { useAuth } from "../AuthBoxProvider";
 import NavButton from "./NavButton";
 
 export interface INavButton {

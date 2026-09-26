@@ -1,4 +1,4 @@
-import { useAuth } from "../AuthProvider"
+import { useAuth } from "../AuthBoxProvider"
 import LoginBox from "./LoginBox";
 import RegisterBox from "./RegisterBox";
 

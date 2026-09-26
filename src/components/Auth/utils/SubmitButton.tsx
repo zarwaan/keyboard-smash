@@ -1,25 +1,30 @@
 import useFetch from "@/hooks/useFetch"
 import { useUIContext } from "@/providers/UIProvider"
 import { motion } from "motion/react"
-import { useAuth } from "../AuthProvider"
+import { useAuth } from "../AuthBoxProvider"
 import { useEffect } from "react";
+import type { ILoginDetails } from "shared/types/auth.types"
+import { useGlobalAuthContext } from "@/providers/AuthProvider";
 
 export default function SubmitButton({props, checkAndSanitise = () => true}: {props: Parameters<typeof useFetch>, checkAndSanitise?: () => boolean}) {
     const {createToast, closeAuth} = useUIContext();
     const {setErrorMessage} = useAuth();
-    const {data, loading, error, execute} = useFetch(...props);
+    const {data, loading, error, execute} = useFetch<ILoginDetails>(...props);
+    const {loggedIn, login} = useGlobalAuthContext();
     const onClick = () => {
         if(loading) return;
         if(!checkAndSanitise()) return;
+        if(loggedIn) return
         execute();
     }
     useEffect(() => {
-        if(data) {
+        if(data && data.result.content?.userDetails) {
             setErrorMessage(null);
             createToast({
                 type: "SUCCESS",
                 label: "Logged in successfully!"
             });
+            login(data.result.content?.userDetails)
             closeAuth();
         }
     }, [data]);

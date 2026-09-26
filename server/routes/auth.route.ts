@@ -1,7 +1,8 @@
 import express from "express";
 import bcrypt from 'bcrypt';
 import { UserModel } from "../models/User.model";
-import { DBUser } from "shared/types/shared.types";
+import { DBUser, IUserSessionDetails } from "shared/types/shared.types";
+import type { ILoginDetails } from "shared/types/auth.types"
 import { usernameCheck } from "shared/helpers/validationChecks";
 import { setSession } from "../utils/sessions.utils";
 import { jsonResponse } from "../utils/middleware.utils";
@@ -37,19 +38,18 @@ authRouter.post('/signup', async (req, res) => {
         setSession(req, newUser);
         console.log(req.session.userDetails)
         console.log("User added successfully");
-        // return res.status(200).json(newUser);
-        return jsonResponse(res,200,{
+        return jsonResponse<ILoginDetails>(res,200,{
             message: "User added successfully",
             result: {
                 content: {
-                    userId: newUser._id.toString()
+                    loggedIn: true,
+                    userDetails: req.session.userDetails ?? null
                 }
             }
         })
     } 
     catch (e) {
         console.error("Error adding user "+e)
-        // return res.status(500).json(e);
         return jsonResponse(res,500,{
             message: "Error adding user",
             result: {
@@ -66,32 +66,23 @@ authRouter.post('/login', async (req, res) => {
             username: body.username
         });
         if(!existsingUser){
-            // return res.status(404).json({
-            //     messsage: "Cant find username"
-            // })
             return jsonResponse(res,404,{
                 message: "User not found!",
             })
         }
         if(!(await bcrypt.compare(body.password, existsingUser.password))){
-            // return res.status(401).json({
-            //     message: "Incorrect password"
-            // })
             return jsonResponse(res,401,{
                 message: "Incorrect passsword!"
             })
         }
         setSession(req,existsingUser);
         console.log(req.session.userDetails)
-        // return res.status(200).json({
-        //     message: "Logged in!",
-        //     username: existsingUser.username
-        // })
-        return jsonResponse(res,200,{
+        return jsonResponse<ILoginDetails>(res,200,{
             message: "Logged in",
             result: {
                 content: {
-                    userId: existsingUser._id.toString()
+                    loggedIn: true,
+                    userDetails: req.session.userDetails ?? null
                 }
             }
         })
@@ -109,10 +100,6 @@ authRouter.post('/login', async (req, res) => {
 authRouter.post('/logout', async (req, res) => {
     req.session.destroy(err => {
         if(err) 
-            // return res.status(500).json({
-            //     success: false,
-            //     message: 'Could not log out'
-            // });
             return jsonResponse(res,500,{
                 message: "Error logging out",
                 result: {
@@ -122,13 +109,38 @@ authRouter.post('/logout', async (req, res) => {
         res.clearCookie('connect.sid');
         console.log('\nLogged out!')
         console.log(req.session);
-        // return res.status(200).json({
-        //     success: true,
-        //     message: "Logged out!"
-        // })
-        return jsonResponse(res,200,{
+        return jsonResponse<ILoginDetails>(res,200,{
             message: "Logged out successfully",
+            result: {
+                content: {
+                    loggedIn: false,
+                    userDetails: null
+                }
+            }
         })
+    })
+})
+
+authRouter.get('/me', (req, res) => {
+    if(!req.session.userDetails)
+        return jsonResponse<ILoginDetails>(res, 200, {
+            message: "User is not logged in",
+            result: {
+                content: {
+                    loggedIn: false,
+                    userDetails: null
+                }
+            }
+        })
+    
+    return jsonResponse<ILoginDetails>(res, 200, {
+        message: "User is logged in",
+        result: {
+            content: {
+                loggedIn : true,
+                userDetails: req.session.userDetails
+            }
+        }
     })
 })
 

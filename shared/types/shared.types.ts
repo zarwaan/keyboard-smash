@@ -14,10 +14,14 @@ export interface DBUser {
     email?: string;
 }
 
-export interface ResponseJsonBody {
+export interface ResponseJsonBody<T> {
     message: string,
     result: {
-        content? : any,
+        content? : T,
         error? : any
     }
 }
+
+export interface IUserSessionDetails extends Omit<DBUser,'password'> {
+    userId: string
+} 

@@ -7,11 +7,12 @@ import Score from "../GameDisplay/ScoreDisplay/Score";
 // import InstructionBox from "../Instructions/InstructionBox";
 import InstructionBox2 from "../Instructions/2/InstructionBox2";
 import AuthBox from "../Auth/AuthBox";
+import ProfileBox from "../Profile/ProfileBox";
 
 export default function ContentLayout() {
     return (
         <div className="border-(--text-color) border- h-[98vh] text-center flex flex-col justify-items-center p-4 relative 
-        main-content gap-10">
+                        main-content gap-10">
             <Header />
             <MainBody>
                 <KeyboardContainer />
@@ -21,6 +22,7 @@ export default function ContentLayout() {
             <SettingsBox />
             <InstructionBox2 />
             <AuthBox />
+            <ProfileBox />
         </div>
     )
 }

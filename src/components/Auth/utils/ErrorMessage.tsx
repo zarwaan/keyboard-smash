@@ -1,4 +1,4 @@
-import { useAuth } from "../AuthProvider"
+import { useAuth } from "../AuthBoxProvider"
 
 export default function ErrorMessage({}) {
     const {errorMessage} = useAuth();

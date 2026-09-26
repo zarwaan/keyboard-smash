@@ -32,6 +32,10 @@ export interface UIState {
     openAuth : () => void,
     closeAuth : () => void,
 
+    isProfileOpen : boolean,
+    openProfile : () => void,
+    closeProfile : () => void,
+
     currentTheme : theme,
     setLightTheme : () => void,
     setDarkTheme : () => void
@@ -58,6 +62,7 @@ export default function UIProvider({children} : {children: React.ReactNode}) {
     const [ isSettingsOpen, openSettings, closeSettings ] = useBooleanState(false);
     const [isInstructionOpen, openInstruction, closeInstruction] = useBooleanState(false);
     const [isAuthOpen, openAuth, closeAuth] = useBooleanState(false);
+    const [isProfileOpen, openProfile, closeProfile] = useBooleanState(false);
     const [isFirstTime, setIsFirstTime] = usePersistentState<boolean>('isFirstTime', true);
     const [walkthroughPhase, setWalkthroughPhase] = useState<WalkthroughPhaseType>(isFirstTime ? 'instructions' : '$$OVER$$');
 
@@ -108,6 +113,7 @@ export default function UIProvider({children} : {children: React.ReactNode}) {
             isSettingsOpen, openSettings, closeSettings, 
             isInstructionOpen, openInstruction, closeInstruction,
             isAuthOpen, openAuth, closeAuth,
+            isProfileOpen, openProfile, closeProfile,
             currentTheme, setLightTheme, setDarkTheme,
             isMusicMuted, muteMusic, unmuteMusic,
             areEffectsMuted, muteEffects, unmuteEffects,
