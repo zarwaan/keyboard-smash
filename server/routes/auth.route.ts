@@ -9,8 +9,8 @@ import { jsonResponse } from "../utils/middleware.utils";
 
 const authRouter = express.Router();
 
-authRouter.get('/', (req,res)=> {
-    res.send("Alive")
+authRouter.get('/health', (req,res)=> {
+    res.send("Auth alive")
 })
 
 authRouter.post('/signup', async (req, res) => {

@@ -1,5 +1,5 @@
-import type { DBScore } from "../types/db.type";
 import mongoose, { Schema } from "mongoose";
+import { DBScore } from "shared/types/shared.types";
 
 const requiredString = {
     type: String,

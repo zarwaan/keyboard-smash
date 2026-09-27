@@ -4,6 +4,7 @@ import { connectDB } from './mongodb/connect.db';
 import authRouter from './routes/auth.route';
 import session from 'express-session';
 import { KSEnv } from './envConfig';
+import scoreRouter from './routes/score.route';
 
 const app = express();
 app.use(express.json())
@@ -37,7 +38,8 @@ app.get('/', (_, res) => {
     res.send("App is up and running!")
 })
 
-app.use('/auth',authRouter)
+app.use('/auth',authRouter);
+app.use('/scores',scoreRouter);
 
 app.listen(8080, () => {
     console.log("listening on http://localhost:"+KSEnv.PORT)
