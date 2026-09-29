@@ -37,7 +37,7 @@ export const difficulties :
             },
         }
 
-export const STEP_EVERY = 15; // in seconds
+export const STEP_EVERY = 7; // in seconds
 export const STEPS = 10;
 
 export const stepIncrements: difficultyProps = {

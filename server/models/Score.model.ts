@@ -24,6 +24,11 @@ const ScoreSchema = new Schema<DBScore>({
             targetsHit: Number,
             targetsMissed: Number,
             bombsHit: Number,
+            powerupsCollected: {
+                type: Map,
+                of: Number,
+                default: {life: 0, shield:0, fireAll:0}
+            }
         },
         required: true
     },

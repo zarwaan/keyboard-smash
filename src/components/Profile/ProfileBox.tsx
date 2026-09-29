@@ -79,7 +79,7 @@ export default function ProfileBox({}) {
                         Done
                     </button>
                     <button className="px-4 py-1 rounded-full bg-red-500 text-(--full-white) text-lg shadow-xl cursor-pointer
-                    flex flex-center gap- w-32/100 gap-1" onClick={logoutServer} disabled={loading}>
+                    flex flex-center gap- w-32/100 gap-1" onClick={() => logoutServer()} disabled={loading}>
                         {
                             !loading ?
                             <>

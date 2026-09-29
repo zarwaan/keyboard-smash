@@ -1,12 +1,15 @@
-import type { Schema, Types } from "mongoose";
+// import type { PowerUpType } from "../../src/types/targets.type";
+import type { Types } from "mongoose";
 
 export type difficulty = "easy" | "medium" | "hard" | "impossible" | "incr"
 export type playModes = "lives" | "infinite" 
+type PowerUpType = "shield" | "life" | "fireAll"
 
 export interface Score {
     targetsHit: number;
     targetsMissed: number;
     bombsHit: number;
+    powerupsCollected: Record<PowerUpType,number>;
     lives: number;
 }
 

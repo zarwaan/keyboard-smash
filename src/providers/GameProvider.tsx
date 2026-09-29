@@ -10,9 +10,12 @@ import { useUIContext } from "./UIProvider";
 import type { GameEvent, TargetType } from "@/types/targets.type";
 import { TARGETS } from "@/configs/targets.config";
 import useEffectLog from "@/hooks/useEffectLog";
+import { type IScoreDetails, type ScoreBody } from "shared/types/scores.types"
+import { useGlobalAuthContext } from "./AuthProvider";
+import useFetch from "@/hooks/useFetch";
 
 interface GameState {
-    gameId: number;
+    gameId: string;
     pressedKeys: Set<string>;
     isPressed: (keyValue: string) => boolean;
     targetKeys: Target[];
@@ -50,6 +53,9 @@ export default function GameProvider({ children }: { children: React.ReactNode }
     const [diff, setDiff] = useState(initDiffProperties);
     const { createToast } = useUIContext();
     const [step, setStep] = useState(0);
+    const {loggedIn} = useGlobalAuthContext();
+
+    const {execute:logScore} = useFetch<IScoreDetails>('/scores');
 
     useEffect(() => {
         setDiff(initDiffProperties)
@@ -73,6 +79,11 @@ export default function GameProvider({ children }: { children: React.ReactNode }
             cumulativeProbability += PROBABILITIES[type];
             return random < cumulativeProbability;
         })!;
+    }
+
+    const calculateAccuracy = (score: GameReducerState['score']) => {
+        const {targetsHit, targetsMissed} = score
+        return (Math.round((targetsHit/(targetsHit+targetsMissed)) * 100 * 100)) / 100
     }
 
     const [state, dispatch] = useReducer(gameReducer, initialGameState);
@@ -189,6 +200,21 @@ export default function GameProvider({ children }: { children: React.ReactNode }
         if (!state.isGameOver) return;
         pauseGame();
         gameAudios['game_over'].play();
+        if(loggedIn){
+            const scoreBody : ScoreBody = {
+                gameId: `ks-${state.gameId}`,
+                score: state.score,
+                difficulty: difficulty,
+                playMode: playModeRef.current,
+                accuracy: calculateAccuracy(state.score),
+                gameTime: state.timeKeeping.elapsed
+            }
+            logScore({
+                method: "POST",
+                credentials: 'include',
+                body: JSON.stringify(scoreBody)
+            })
+        }
     }, [state.isGameOver]);
 
     useEffect(() => {

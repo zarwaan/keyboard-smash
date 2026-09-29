@@ -11,7 +11,7 @@ export default function useFetch<T>(
     const [error, setError] = useState<ResponseJsonBody<T>>();
     const controllerRef = useRef<AbortController | null>(null);
 
-    const fetchData = useCallback(async () => 
+    const fetchData = useCallback(async (optionsArg: RequestInit = options) => 
         {
             if(controllerRef.current) controllerRef.current.abort();
             const controller = new AbortController();
@@ -27,10 +27,10 @@ export default function useFetch<T>(
                         signal: controllerRef.current.signal,
 
                         // options arg
-                        ...options,
+                        ...optionsArg,
                         headers: {
                             "Content-Type": "application/json",
-                            ...options.headers
+                            ...optionsArg.headers
                         }
                     }
                 )
@@ -52,6 +52,7 @@ export default function useFetch<T>(
                         error: e
                     }
                 })
+                console.error(e);
             }
             finally {
                 setLoading(false);

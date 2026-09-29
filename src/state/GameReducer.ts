@@ -21,7 +21,7 @@ export interface PowerUpProperties {
 }
 
 export interface GameReducerState {
-    gameId: number;
+    gameId: string;
     targetKeys: Target[];
     hitEvents: HitEvent[];
     gameEventSequence: GameEvent[]; 
@@ -37,12 +37,12 @@ export interface GameReducerState {
     }
 }
 
-const INITIAL_SCORE: Score = { targetsHit: 0, targetsMissed: 0, bombsHit: 0, lives: 7 };
+const INITIAL_SCORE: Score = { targetsHit: 0, targetsMissed: 0, bombsHit: 0, lives: 7, powerupsCollected: {life: 0, shield:0, fireAll:0} };
 const POWERUP_ACTIVE_FOR = 10000;
 const initPowerUpProperties : PowerUpProperties = { active: false, expiresAt: null}
 
 export const initialGameState: GameReducerState = {
-    gameId: 0,
+    gameId: "",
     targetKeys: [],
     hitEvents: [],
     gameEventSequence: [],
@@ -82,10 +82,25 @@ function isPowerUp(t: TargetType): t is PowerUpType {
     return TARGETS[t].kind==="powerup"
 }
 
-function activatePowerUp(prevPowerUps: GameReducerState['powerUps'], powerUpName: PowerUpType, now: number) : GameReducerState['powerUps'] {
-    if(powerUpName==="life") return prevPowerUps;
+function activatePowerUp(prevPowerUps: GameReducerState['powerUps'], prevScore: GameReducerState['score'] , powerUpName: PowerUpType, now: number) 
+: 
+{
+    powerups: GameReducerState['powerUps'],
+    score: GameReducerState['score']
+} {
+    if(powerUpName==="life") return {
+        powerups: prevPowerUps,
+        score: {
+            ...prevScore,
+            powerupsCollected: {
+                ...prevScore.powerupsCollected,
+                life: prevScore.powerupsCollected.life + 1
+            }
+        }
+    };
 
     const powerUps = { ...prevPowerUps }
+    const score = { ...prevScore }
 
     const remaining = Math.max(0, (powerUps[powerUpName].expiresAt ?? now) - now);
 
@@ -112,14 +127,19 @@ function activatePowerUp(prevPowerUps: GameReducerState['powerUps'], powerUpName
             expiresAt: now + remaining + POWERUP_ACTIVE_FOR
         };
     }
+
+    score.powerupsCollected[powerUpName] = score.powerupsCollected[powerUpName] + 1
     
-    return powerUps
+    return {
+        powerups: powerUps,
+        score: score
+    }
 }
 
 export function gameReducer(state: GameReducerState, action: GameAction): GameReducerState {
     switch (action.type) {
         case "START_GAME":
-            return { ...initialGameState, gameId: state.gameId + 1, gameState: "ongoing",
+            return { ...initialGameState, gameId: crypto.randomUUID(), gameState: "ongoing",
                 timeKeeping: {
                     ...initialGameState.timeKeeping,
                     startTime: action.now,
@@ -184,7 +204,9 @@ export function gameReducer(state: GameReducerState, action: GameAction): GameRe
                 expiresAt: action.now + 500,
             };
 
-            const score = 
+            let score = 
+                isPowerUp(target.type) && target.type!=="life" ?
+                { ...state.score } :
                 target.type === "bomb" && !shieldUp ?
                     applyLivesDelta({ ...state.score, bombsHit: state.score.bombsHit + 1 }, -2, action.infiniteLives)
                 : target.type === "bomb" && shieldUp ?
@@ -206,8 +228,11 @@ export function gameReducer(state: GameReducerState, action: GameAction): GameRe
 
             let powerUps = { ...state.powerUps }
 
-            if(isPowerUp(target.type)) 
-                powerUps = activatePowerUp(state['powerUps'], target.type, action.now);
+            if(isPowerUp(target.type)){
+                const {powerups: p, score: s} = activatePowerUp(state['powerUps'], state.score , target.type, action.now);
+                powerUps = p;
+                score = s
+            }
 
             return {
                 ...state,
