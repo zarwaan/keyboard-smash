@@ -17,7 +17,7 @@ export default function HammerAnimation({keyPress} : {keyPress: boolean}) {
     },[keyPress]);
 
     return (
-        <div className="borde border-purple-500 absolute inset-0 flex justify-center items-end pointer-events-none overflow-visible">
+        <div className="borde border-purple-500 absolute inset-0 flex justify-center items-end pointer-events-none overflow-visible z-8">
             <video muted playsInline className="borde border-green-600 z-10 w-30 max-w-none translate-x-5.75 hidden" ref={hammerVideoRef}
                 onEnded={e => {
                     if(!keyPress){
