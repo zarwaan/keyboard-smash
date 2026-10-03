@@ -3,6 +3,7 @@ import InstructionsIcon from "./HeaderIcons/InstructionsIcon";
 import SettingsIcon from "./HeaderIcons/SettingsIcon";
 import AuthIcon from "./HeaderIcons/AuthIcon";
 import { useGlobalAuthContext } from "@/providers/AuthProvider";
+import { useLocation } from "react-router-dom";
 
 export default function Header({}) {
     const heightToBeRef = useRef<HTMLSpanElement>(null);
@@ -12,6 +13,8 @@ export default function Header({}) {
     useEffect(() => {
         setH(heightToBeRef.current?.offsetHeight ?? 0)
     },[heightToBeRef.current]);
+
+    const location = useLocation();
 
     return (
         <div className=" w-full text-7xl text-indigo-500 font-black theme-transition font-(family-name:--header-font) tracking-wider relative 
@@ -26,8 +29,13 @@ export default function Header({}) {
             <span>Smash</span>
             <div className="absolute w-full top-0 left-0 h-full borde border-white flex justify-end items-center gap-3.5 ">
                 <SettingsIcon />
-                <InstructionsIcon />
-                <AuthIcon loggedIn={loggedIn}/>
+                {
+                    location.pathname==='/' &&
+                    <>
+                        <InstructionsIcon />
+                        <AuthIcon loggedIn={loggedIn}/>
+                    </>
+                }
             </div>
         </div>
     )

@@ -1,6 +1,6 @@
 import './App.css'
 import '@/themes/themes.css'
-import ContentLayout from '@/components/MainContent/ContentLayout'
+// import ContentLayout from '@/components/MainContent/ContentLayout'
 import BackgroundBlur from './components/Utils/BackgroundBlur'
 import AppProviders from './providers/AppProviders'
 import { useUIContext } from './providers/UIProvider'
@@ -9,6 +9,8 @@ import { AnimatePresence } from 'motion/react'
 import { Analytics } from '@vercel/analytics/react'
 import WalkThroughToolTip from './components/Utils/WalkThroughToolTip'
 import Toast from './components/Utils/Toast'
+import { RouterProvider } from 'react-router-dom'
+import { router } from './router'
 
 function App() {
 	useEffect(() => {
@@ -29,7 +31,7 @@ function AppContent() {
 	const uictx = useUIContext();
 	return (
 		<>
-			<ContentLayout />
+			<RouterProvider router={router} />
 			<AnimatePresence>
 				{(
 					uictx.isSettingsOpen || 
